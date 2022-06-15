@@ -1,7 +1,7 @@
 {
-    "scopeName": "source.dbmodel",
+    "scopeName": "source.rsl",
     "fileTypes": [
-        "dbmodel"
+        "rsl"
     ],
     "patterns": [
         {

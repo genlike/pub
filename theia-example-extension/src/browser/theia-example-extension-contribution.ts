@@ -115,25 +115,25 @@ export class TheiaExampleExtensionMenuContribution implements MenuContribution {
 export class ItLingoGrammarContribution implements LanguageGrammarDefinitionContribution {
 
     readonly id = 'itlang';
-    readonly scopeName = 'source.dbmodel';
+    readonly scopeName = 'source.rsl';
 
     registerTextmateLanguage(registry: TextmateRegistry) {
         languages.register({
             id: 'itlang',
             aliases: [
-                'itlang', 'dbmodel'
+                'itlang', 'rsl'
             ],
             extensions: [
-                '.dbmodel',
+                '.rsl',
             ],
             mimetypes: [
-                'text/dbmodel'
+                'text/rsl'
             ]
         });
         languages.setLanguageConfiguration(this.id, this.configuration);
 
         const statesGrammar = require('../../data/itlang.tmLanguage.json');
-        registry.registerTextmateGrammarScope('source.dbmodel', {
+        registry.registerTextmateGrammarScope('source.rsl', {
             async getGrammarDefinition() {
                 return {
                     format: 'json',
@@ -141,7 +141,7 @@ export class ItLingoGrammarContribution implements LanguageGrammarDefinitionCont
                 };
             }
         });
-        registry.mapLanguageIdToTextmateGrammar(this.id, 'source.dbmodel');
+        registry.mapLanguageIdToTextmateGrammar(this.id, 'source.rsl');
     }
 
     protected configuration: languages.LanguageConfiguration = {
