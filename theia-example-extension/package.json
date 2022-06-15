@@ -1,0 +1,32 @@
+{
+  "name": "theia-example-extension",
+  "keywords": [
+    "theia-extension"
+  ],
+  "version": "0.0.0",
+  "files": [
+    "data",
+    "lib",
+    "src"
+  ],
+  "dependencies": {
+    "@theia/core": "latest"
+  },
+  "devDependencies": {
+    "rimraf": "latest",
+    "typescript": "latest"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "update-vscode": "node ./node_modules/vscode/bin/install"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/theia-example-extension-frontend-module",
+      "backend": "lib/node/WorkspaceApi-backend-module"
+    }
+  ]
+}
