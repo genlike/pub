@@ -5,21 +5,21 @@ import {  CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
 import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 // import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
-//import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
+import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
 // import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
 //import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
 
 import { ILogger } from "@theia/core/lib/common";
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 //import URI from '@theia/core/lib/common/uri';
-//import TheiaURI from '@theia/core/lib/common/uri';
+import TheiaURI from '@theia/core/lib/common/uri';
 import { languages } from '@theia/monaco-editor-core';
 
-//import axios from 'axios';
+import axios from 'axios';
 
 
 
-//var path = 'file:///C:/';
+var path = '/home/theia/Workspaces';
 //var remoteHostIp = '192.168.1.120';
 
 export const TheiaExampleExtensionCommand: Command = {
@@ -34,7 +34,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     @inject(ApplicationShell)
     protected readonly shell: ApplicationShell;
     constructor(
-        //@inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
+        @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
         // @inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
         @inject(MessageService) private readonly messageService: MessageService,
         // @inject(WorkspaceCommandContribution) private readonly workspaceCommandContribution: WorkspaceCommandContribution,
@@ -45,33 +45,33 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
 
     protected async switchWorkspace(path: string): Promise<void> {
         this.messageService.info(path);
-        // this.workspaceService.open(new TheiaURI(path), {
-        //    preserveWindow: true
-        // });
+         this.workspaceService.open(new TheiaURI(path), {
+            preserveWindow: true
+         });
     }
-    // private compareFoldernames(path1: string, path2: string){
-    //     return path1.substring(path1.length-50) === path2.substring(path2.length - 50);
-    // }
+     private compareFoldernames(path1: string, path2: string){
+         return path1.substring(path1.length-50) === path2.substring(path2.length - 50);
+     }
     configure(app: FrontendApplication): void{
         
     }
     onStart(app: FrontendApplication):void {
-        // axios.get<String>('http://'+ remoteHostIp +':3010/getWorkspace',{},).then(
-        //         response => {
-        //             var prevRoot = this.workspaceService.tryGetRoots()[0] ;
-        //             if (prevRoot != undefined) {
-        //                  if (!this.compareFoldernames(response.data.toString(), prevRoot.resource.path.toString())){
-        //                   //   path = '' + response.data;
-        //                      this.messageService.info("Changing Workspace to:" + response.data + " PREV:" + prevRoot.resource.path);
-        //                      //this.switchWorkspace(path);
-        //                 }
-        //             } else {
-        //                 //path = '' + response.data;
-        //                 this.messageService.info("Setting Workspace to:" + response.data + " STATUS:" + response.status);
-        //                 //this.switchWorkspace(path);
-        //             }
-        //         }
-        //     );
+         axios.get<String>('/getWorkspace',{},).then(
+                 response => {
+                     var prevRoot = this.workspaceService.tryGetRoots()[0] ;
+                     if (prevRoot != undefined) {
+                          if (!this.compareFoldernames(response.data.toString(), prevRoot.resource.path.toString())){
+                              path = '' + response.data;
+                              this.messageService.info("Changing Workspace to:" + response.data + " PREV:" + prevRoot.resource.path);
+                              this.switchWorkspace(path);
+                         }
+                     } else {
+                        // path = '' + response.data;
+                        // this.messageService.info("Setting Workspace to:" + response.data + " STATUS:" + response.status);
+                        // this.switchWorkspace(path);
+                     }
+                 }
+             );
 
         // setInterval(() =>
         // {
