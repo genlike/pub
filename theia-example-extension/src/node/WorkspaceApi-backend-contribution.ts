@@ -7,6 +7,7 @@ import * as uuid from 'uuid';
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
 import * as chokidar from 'chokidar';
+let choki = require('chokidar');
 // import { FileNavigatorWidget, FILE_NAVIGATOR_ID } from '@theia/navigator/lib/browser/navigator-widget';
 // import { WorkspaceNode } from '@theia/navigator/lib/browser/navigator-tree';
 // import URI from '@theia/core/lib/common/uri';
@@ -129,8 +130,8 @@ function createWorkspace(ip:string){
 
 
     function createWatcher(path:string){
-        
-        var watcher = chokidar.watch(path, {ignored: /^\./, persistent: true});
+        console.log('created watcher for:' + path);
+        var watcher = choki.watch(path, {ignored: /^\./, persistent: true});
         watcher
         .on('add', function(path:string) {
             console.log('File', path, 'has been added');
