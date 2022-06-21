@@ -2,10 +2,10 @@ import { injectable } from 'inversify';
 import * as express from 'express';
 import { BackendApplicationContribution } from '@theia/core/lib/node';
 //const pg = require('pg');
-var fs = require('fs');
-var uuid = require('uuid');                        
+import * as fs from 'fs';
+import * as uuid from 'uuid';
 //var getDirName = require('path').dirname;
-var requestIp = require('request-ip');
+let requestIp = require('request-ip');
 import * as chokidar from 'chokidar';
 // import { FileNavigatorWidget, FILE_NAVIGATOR_ID } from '@theia/navigator/lib/browser/navigator-widget';
 // import { WorkspaceNode } from '@theia/navigator/lib/browser/navigator-tree';
@@ -69,9 +69,9 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             let ip = requestIp.getClientIp(req);
         
             createWorkspace(ip);
-            //res.statusCode = 301;
-            //res.redirect('http://' + remoteServerAddress + ':3000/');
-            //res.end();
+            res.statusCode = 301;
+            res.redirect('/');
+            res.end();
         
         });
 
