@@ -52,7 +52,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
              res.end();
         });
 
-        app.get('/getWorkspace', (req, res) => {
+        app.get('/getWorkspace', (req, res) => {\
             let ip = requestIp.getClientIp(req);
             console.log(currentEditors);
             console.log(ip);
