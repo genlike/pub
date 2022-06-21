@@ -130,6 +130,8 @@ function createWorkspace(ip:string){
 
 
     function createWatcher(path:string){
+
+        
         console.log('created watcher for:' + path);
         var watcher = choki.watch(path, {ignored: /^\./, persistent: true});
         watcher
