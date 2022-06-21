@@ -64,7 +64,11 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
 
            this.monacoWorkspace.onDidSaveTextDocument(e =>{
             console.log("Did Save")
-            console.log(e);
+            console.log(e.uri);
+           });
+           this.monacoWorkspace.onDidChangeTextDocument(e =>{
+            console.log("Did change")
+            console.log(e.contentChanges);
            });
            
         });
