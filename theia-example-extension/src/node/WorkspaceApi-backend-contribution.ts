@@ -10,6 +10,7 @@ import { BackendApplicationContribution } from '@theia/core/lib/node';
 
 //const pg = require('pg');
 import * as fs from 'fs';
+import * as nsfw from 'nsfw'
 import * as uuid from 'uuid';
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
@@ -27,7 +28,7 @@ var currentEditors: {[ip:string]: Editor} = {};
 type Editor = {
     foldername:string;
     time:number;
-    watcher: chokidar.FSWatcher;
+    watcher: Promise<nsfw.NSFW>;
 };
 
 @injectable()
@@ -106,20 +107,20 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             //let val:[any, any, any] = value
             if(Date.now() - value.time>5*1000*60){
                 console.log("unwatch this" + value.foldername.substr(66));
-                value.watcher.unwatch(value.foldername.substr(66));
-                value.watcher.close().then(() => {
-                
-                delete currentEditors[key];
-                fs.readdir(value.foldername.substr(66), (error:any, files:string[])=> {
-                    if(error){
-                        console.log(error);
-                    } else {
-                        files.forEach(file => {
-                            console.log(file);
-                          });
-                    }
+                //value.watcher.unwatch(value.foldername.substr(66));
+                value.watcher.then((val) => {val.stop().then(() => {
+                    delete currentEditors[key];
+                    fs.readdir(value.foldername.substr(66), (error:any, files:string[])=> {
+                        if(error){
+                            console.log(error);
+                        } else {
+                            files.forEach(file => {
+                                console.log(file);
+                            });
+                        }
+                    });
+                    fs.rmdir(value.foldername.substr(66)+'/..',{recursive: true}, (error:any) => {console.log(error)});
                 });
-                fs.rmdir(value.foldername.substr(66)+'/..',{recursive: true}, (error:any) => {console.log(error)});
             });
         }
       }
@@ -140,25 +141,49 @@ function createWorkspace(ip:string){
 }
 
 
-    function createWatcher(path:string){
+    async function  createWatcher(path:string){
+
+        let watcher: nsfw.NSFW | undefined = await nsfw(fs.realpathSync(path), (events: nsfw.FileChangeEvent[]) => {
+            for (const event of events) {
+                if (event.action === nsfw.actions.CREATED) {
+                    console.log('File', path, 'has been added');
+                }
+                if (event.action === nsfw.actions.DELETED) {
+                    console.log('File', path, 'has been removed');
+                }
+                if (event.action === nsfw.actions.MODIFIED) {
+                    console.log('File', path, 'has been changed');
+                }
+                if (event.action === nsfw.actions.RENAMED) {
+                    console.log('File', path, 'has been changed');
+                }
+            }
+        }, {
+                errorCallback: error => {
+                    // see https://github.com/atom/github/issues/342
+                    console.warn(`Failed to watch "${path}":`, error);
+                }
+            });
         console.log('created watcher for:' + path);
-        let watcher: chokidar.FSWatcher = chokidar.watch(path, { persistent: true});
-        watcher
-        .on('add', function(path:string) {
-            console.log('File', path, 'has been added');
-            //addFileToDb(path);
-        })
-        .on('change', function(path:string) {
-            
-            console.log('File', path, 'has been changed');
-            //readFileToUpdate(path);
-        })
-        .on('unlink', function(path:string) {
-            console.log('File', path, 'has been removed');
-            //deleteFileFromDb(path);
-        })
-        .on('error', function(error:any) {console.error('Error happened', error);});
+        await watcher.start();
         return watcher;
+        // let watcher: chokidar.FSWatcher = chokidar.watch(path, { persistent: true});
+        // watcher
+        // .on('add', function(path:string) {
+        //     console.log('File', path, 'has been added');
+        //     //addFileToDb(path);
+        // })
+        // .on('change', function(path:string) {
+            
+        //     console.log('File', path, 'has been changed');
+        //     //readFileToUpdate(path);
+        // })
+        // .on('unlink', function(path:string) {
+        //     console.log('File', path, 'has been removed');
+        //     //deleteFileFromDb(path);
+        // })
+        // .on('error', function(error:any) {console.error('Error happened', error);});
+        // return watcher;
     }
 
 
