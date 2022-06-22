@@ -131,12 +131,12 @@ function createWorkspace(ip:string){
     //let randomFoldername = 'tmp/Workspace';
      fs.mkdir(randomFoldername, {recursive: true},(err:any) => {
          if (err) throw err;
+         currentEditors[ip] = {
+            foldername: randomFoldername,
+            time: Date.now(),
+            watcher: createWatcher(randomFoldername)
+         };
      });
-    currentEditors[ip] = {
-        foldername: randomFoldername,
-        time: Date.now(),
-        watcher: createWatcher(randomFoldername)
-     };
     //pullFilesFromDb(randomFoldername,3);
 }
 
