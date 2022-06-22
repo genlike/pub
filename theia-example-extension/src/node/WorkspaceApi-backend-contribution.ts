@@ -1,4 +1,4 @@
-import { inject,injectable } from 'inversify';
+import { injectable } from 'inversify';
 import * as express from 'express';
 import { BackendApplicationContribution } from '@theia/core/lib/node';
 
