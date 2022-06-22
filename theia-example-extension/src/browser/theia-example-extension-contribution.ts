@@ -144,12 +144,12 @@ export class TheiaExampleExtensionMenuContribution implements MenuContribution {
 @injectable()
 export class ItLingoGrammarContribution implements LanguageGrammarDefinitionContribution {
 
-    readonly id = 'itlang';
+    readonly id = 'rsl';
     readonly scopeName = 'source.rsl';
 
     registerTextmateLanguage(registry: TextmateRegistry) {
         languages.register({
-            id: 'itlang',
+            id: 'rsl',
             aliases: [
                 'itlang', 'rsl'
             ],

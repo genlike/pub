@@ -2,16 +2,11 @@ import { injectable } from 'inversify';
 import * as express from 'express';
 import { BackendApplicationContribution } from '@theia/core/lib/node';
 
-
-
-
-
-
-
 //const pg = require('pg');
 import * as fs from 'fs';
 import * as nsfw from 'nsfw'
 import * as uuid from 'uuid';
+//const { Client } = require('pg');
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
 
@@ -45,7 +40,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
     configure(app: express.Application) {
 
-        
+        // const client = new Client({
+        //     host:'ec2-52-31-217-108.eu-west-1.compute.amazonawas.com',
+            
+        // });
 
         app.post('/setWorkspace', (req, res) => {
             // const widget = this.shell.getWidgetById(FILE_NAVIGATOR_ID) as FileNavigatorWidget | undefined;
