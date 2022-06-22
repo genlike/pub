@@ -142,7 +142,7 @@ function createWorkspace(ip:string){
 
     function createWatcher(path:string){
         console.log('created watcher for:' + path);
-        let watcher: chokidar.FSWatcher = chokidar.watch(path, {ignored: /^\./, persistent: true});
+        let watcher: chokidar.FSWatcher = chokidar.watch(path, { persistent: true});
         watcher
         .on('add', function(path:string) {
             console.log('File', path, 'has been added');
