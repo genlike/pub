@@ -1,7 +1,7 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { Command, CommandContribution, CommandRegistry, MenuContribution, MenuModelRegistry, MessageService} from '@theia/core/lib/common';
-import {  CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
+import { CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
 import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
@@ -9,12 +9,17 @@ import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service
 // import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
 //import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
 
+
+
 import { ILogger } from "@theia/core/lib/common";
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 //import URI from '@theia/core/lib/common/uri';
 import TheiaURI from '@theia/core/lib/common/uri';
 import { languages } from '@theia/monaco-editor-core';
 
+
+
+//import { FileChangeCollection } from '@theia/filesystem/src/node/file-change-collection';
 import axios from 'axios';
 
 
@@ -35,8 +40,11 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     protected readonly shell: ApplicationShell;
     constructor(
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
-        @inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
+        //@inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
         @inject(MessageService) private readonly messageService: MessageService,
+
+       
+        
         // @inject(WorkspaceCommandContribution) private readonly workspaceCommandContribution: WorkspaceCommandContribution,
         // @inject(CommandService) private readonly commandService: CommandService,
         //@inject(CommandService) private readonly commandService: CommandService,
@@ -53,25 +61,28 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
          return path1.substring(path1.length-50) === path2.substring(path2.length - 50);
      }
     configure(app: FrontendApplication): void{
-        this.workspaceService.onWorkspaceChanged((e) => {
-            e.forEach((v, i , a)=> {
-                console.log("For each");
-                console.log(v);
-                console.log(i);
-                console.log(a);
-            });
-           // this.messageService.info();
 
-           this.monacoWorkspace.onDidSaveTextDocument(e =>{
-            console.log("Did Save")
-            console.log(e.uri);
-           });
-           this.monacoWorkspace.onDidChangeTextDocument(e =>{
-            console.log("Did change")
-            console.log(e.contentChanges);
-           });
+        // this.workspaceService.onWorkspaceChanged((e) => {
+        //     e.forEach((v, i , a)=> {
+        //         console.log("For each");
+        //         console.log(v);
+        //         console.log(i);
+        //         console.log(a);
+        //     });
+        //    // this.messageService.info();
+
+        //    this.monacoWorkspace.onDidSaveTextDocument(e =>{
+        //     console.log("Did Save")
+        //     console.log(e.uri);
+        //    });
+        //    this.monacoWorkspace.onDidChangeTextDocument(e =>{
+        //     console.log("Did change")
+        //     console.log(e.contentChanges);
+        //    });
+
            
-        });
+           
+        //});
     }
     onStart(app: FrontendApplication):void {
         

@@ -1,6 +1,13 @@
-import { injectable } from 'inversify';
+import { inject,injectable } from 'inversify';
 import * as express from 'express';
 import { BackendApplicationContribution } from '@theia/core/lib/node';
+
+
+
+import { DiskFileSystemProvider  } from '@theia/filesystem/src/node/disk-file-system-provider';
+
+
+
 //const pg = require('pg');
 import * as fs from 'fs';
 import * as uuid from 'uuid';
@@ -26,6 +33,8 @@ type Editor = {
 
 @injectable()
 export class SwitchWSBackendContribution implements BackendApplicationContribution {
+    
+    @inject(DiskFileSystemProvider) private readonly fileChangeCollection: DiskFileSystemProvider;
     // @inject(ApplicationShell)
     // protected readonly shell: ApplicationShell;
 
@@ -35,6 +44,12 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
     
 
     configure(app: express.Application) {
+
+        this.fileChangeCollection.onDidChangeFile(e =>{
+            console.log("DISK CHANGE")
+            console.log(e.map);
+        });
+
         app.post('/setWorkspace', (req, res) => {
             // const widget = this.shell.getWidgetById(FILE_NAVIGATOR_ID) as FileNavigatorWidget | undefined;
             // if (!widget) {
