@@ -4,7 +4,7 @@ import { Command, CommandContribution, CommandRegistry, MenuContribution, MenuMo
 import { CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
 import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
-//import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
+import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
 // import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
 //import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
@@ -40,7 +40,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     protected readonly shell: ApplicationShell;
     constructor(
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
-        //@inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
+        @inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
         @inject(MessageService) private readonly messageService: MessageService,
 
        
@@ -71,10 +71,10 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         //     });
         //    // this.messageService.info();
 
-        //    this.monacoWorkspace.onDidSaveTextDocument(e =>{
-        //     console.log("Did Save")
-        //     console.log(e.uri);
-        //    });
+            this.monacoWorkspace.onDidSaveTextDocument(e =>{
+             console.log("Did Save")
+             console.log(e.uri);
+            });
         //    this.monacoWorkspace.onDidChangeTextDocument(e =>{
         //     console.log("Did change")
         //     console.log(e.contentChanges);
