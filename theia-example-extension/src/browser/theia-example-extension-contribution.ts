@@ -4,7 +4,7 @@ import { Command, CommandContribution, CommandRegistry, MenuContribution, MenuMo
 import { CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
 import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
-import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
+//import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
 // import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
 //import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
