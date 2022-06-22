@@ -14,7 +14,6 @@ import * as uuid from 'uuid';
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
 import * as chokidar from 'chokidar';
-let choki = require('chokidar');
 // import { FileNavigatorWidget, FILE_NAVIGATOR_ID } from '@theia/navigator/lib/browser/navigator-widget';
 // import { WorkspaceNode } from '@theia/navigator/lib/browser/navigator-tree';
 // import URI from '@theia/core/lib/common/uri';
