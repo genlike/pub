@@ -98,31 +98,6 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         
         });
 
-      setInterval(() => {
-        for (const [key, value] of Object.entries(currentEditors)) {
-            console.log(key + value + 'Time Diff' + (Date.now() - value.time));
-            //If last update was 5 min ago
-            //let val:[any, any, any] = value
-            if(Date.now() - value.time>5*1000*60){
-                console.log("unwatch this" + value.foldername.substr(66));
-                //value.watcher.unwatch(value.foldername.substr(66));
-                value.watcher.then((val) => {val.stop().then(() => {
-                    delete currentEditors[key];
-                    fs.readdir(value.foldername.substr(66), (error:any, files:string[])=> {
-                        if(error){
-                            console.log(error);
-                        } else {
-                            files.forEach(file => {
-                                console.log(file);
-                            });
-                        }
-                    });
-                    fs.rmdir(value.foldername.substr(66)+'/..',{recursive: true}, (error:any) => {console.log(error)});
-                });
-            });
-        }
-      }
-}, 60000);
 
 function createWorkspace(ip:string){
     let randomFoldername =hostfs + 'tmp/WS-' + uuid.v4() + '/Workspace';
@@ -165,23 +140,6 @@ function createWorkspace(ip:string){
         console.log('created watcher for:' + path);
         await watcher.start();
         return watcher;
-        // let watcher: chokidar.FSWatcher = chokidar.watch(path, { persistent: true});
-        // watcher
-        // .on('add', function(path:string) {
-        //     console.log('File', path, 'has been added');
-        //     //addFileToDb(path);
-        // })
-        // .on('change', function(path:string) {
-            
-        //     console.log('File', path, 'has been changed');
-        //     //readFileToUpdate(path);
-        // })
-        // .on('unlink', function(path:string) {
-        //     console.log('File', path, 'has been removed');
-        //     //deleteFileFromDb(path);
-        // })
-        // .on('error', function(error:any) {console.error('Error happened', error);});
-        // return watcher;
     }
 
 
