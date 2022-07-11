@@ -6,7 +6,7 @@ import { BackendApplicationContribution } from '@theia/core/lib/node';
 import * as fs from 'fs';
 import * as nsfw from 'nsfw'
 import * as uuid from 'uuid';
-//const { Client } = require('pg');
+const  Client = require('pg');
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
 
@@ -44,6 +44,27 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         //     host:'ec2-52-31-217-108.eu-west-1.compute.amazonawas.com',
             
         // });
+        const connectionString = process.env.DATABASE_URL;
+
+        const pgClient = new Client({
+            connectionString,
+        });
+        pgClient.connect();
+
+        function addFileToDB(params:string[], event:nsfw.CreatedFileEvent){
+            console.log("Add file");
+            console.log(event.directory);
+            console.log(event.file);
+            pgClient.query("SELECT filename, workspace FROM t_files WHERE filename=$1 AND workspace=$2", [event.file,params[0]], (err:any, res:any) =>
+            {
+                if(err) {
+                    console.error("AddFileToDB ERROR");
+                    console.error(err.stack);
+                    return;
+                }
+                console.log(res.rows[0]);
+            })
+        }
 
         app.post('/setWorkspace', (req, res) => {
             // const widget = this.shell.getWidgetById(FILE_NAVIGATOR_ID) as FileNavigatorWidget | undefined;
@@ -107,19 +128,20 @@ function createWorkspace(ip:string){
          currentEditors[ip] = {
             foldername: randomFoldername,
             time: Date.now(),
-            watcher: createWatcher(randomFoldername)
+            watcher: createWatcher(randomFoldername,['workspace'])
          };
      });
     //pullFilesFromDb(randomFoldername,3);
 }
 
 
-    async function  createWatcher(path:string){
+    async function  createWatcher(path:string, params:string[]){
 
         let watcher: nsfw.NSFW | undefined = await nsfw(fs.realpathSync(path), (events: nsfw.FileChangeEvent[]) => {
             for (const event of events) {
                 if (event.action === nsfw.actions.CREATED) {
                     console.log('File', path, 'has been added');
+                    addFileToDB(params, event);
                 }
                 if (event.action === nsfw.actions.DELETED) {
                     console.log('File', path, 'has been removed');
@@ -168,6 +190,7 @@ function createWorkspace(ip:string){
         }
       }
 }, 60000);
+
 
     }
 }
