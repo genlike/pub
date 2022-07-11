@@ -6,7 +6,7 @@ import { BackendApplicationContribution } from '@theia/core/lib/node';
 import * as fs from 'fs';
 import * as nsfw from 'nsfw'
 import * as uuid from 'uuid';
-const  Client = require('pg');
+const { Client } = require('pg');
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
 
