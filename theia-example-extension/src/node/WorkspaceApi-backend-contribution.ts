@@ -48,6 +48,9 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         const pgClient = new Client({
             connectionString,
+            ssl: {
+                rejectUnauthorized: false
+              }
         });
         pgClient.connect();
 
