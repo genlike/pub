@@ -65,6 +65,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                     console.error(err.stack);
                     return;
                 }
+                console.log("QUERY");
                 console.log(res.rows[0]);
             })
         }
