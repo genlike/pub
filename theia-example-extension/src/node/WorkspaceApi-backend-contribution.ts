@@ -66,8 +66,16 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                     return;
                 }
                 console.log("QUERY");
-                console.log(res.rows[0]);
-            })
+                if(res.rowCount > 0){
+                    console.log("File Already Exists");
+                } else {
+                    const fullfilepath = event.directory + '/' + event.file;
+
+                    var rawData = fs.readFileSync(fullfilepath);
+                    pgClient.query("INSERT INTO t_files(filename, workspace, file) VALUES ($1, $2, $3)",
+                    [fullfilepath.substring(76),params[0], rawData]);
+                }
+            });
         }
 
         app.post('/setWorkspace', (req, res) => {
