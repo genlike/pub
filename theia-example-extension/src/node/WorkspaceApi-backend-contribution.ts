@@ -73,7 +73,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
                     var rawData = fs.readFileSync(fullfilepath);
                     pgClient.query("INSERT INTO t_files(filename, workspace, file) VALUES ($1, $2, $3)",
-                    [fullfilepath.substring(76),params[0], rawData]);
+                    [fullfilepath.substring(76),params[0], rawData]).
+                    then((res:any) => {
+                        console.log("Inserted " + res.row[0]);
+                    });
                 }
             });
         }
