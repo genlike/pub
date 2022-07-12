@@ -44,7 +44,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         //     host:'ec2-52-31-217-108.eu-west-1.compute.amazonawas.com',
             
         // });
-        const connectionString = "postgres://postgres:postgres@localhost:5432/itlingo"; //process.env.DATABASE_URL;
+        const connectionString = process.env.DATABASE_URL;
         console.log("CONSTRING - " + connectionString)
 
         const pgClient = new Client({
