@@ -57,7 +57,9 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log("Add file");
             console.log(event.directory);
             console.log(event.file);
-            pgClient.query("SELECT filename, workspace FROM t_files WHERE filename=$1 AND workspace=$2", [event.file,params[0]], (err:any, res:any) =>
+            const fullfilepath = event.directory + '/' + event.file;
+            const onlyFile = fullfilepath.substring(77);
+            pgClient.query("SELECT filename, workspace FROM t_files WHERE filename=$1 AND workspace=$2", [onlyFile,params[0]], (err:any, res:any) =>
             {
                 if(err) {
                     console.error("AddFileToDB ERROR");
@@ -68,12 +70,12 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 if(res.rowCount > 0){
                     console.log("File Already Exists");
                 } else {
-                    const fullfilepath = event.directory + '/' + event.file;
+                    
 
                     var rawData = fs.readFileSync(fullfilepath);
                     console.log(params);
                     pgClient.query("INSERT INTO t_files(filename, workspace, file) VALUES ($1, $2, $3)",
-                    [fullfilepath.substring(76),params[0], rawData], (err:any,resI:any) => {
+                    [onlyFile,params[0], rawData], (err:Error,resI:any) => {
                         if(err) {
                             console.error("AddFileToDB Insert ERROR");
                             console.error(err.stack);
