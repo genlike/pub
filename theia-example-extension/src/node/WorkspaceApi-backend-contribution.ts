@@ -6,7 +6,7 @@ import { BackendApplicationContribution } from '@theia/core/lib/node';
 import * as fs from 'fs';
 import * as nsfw from 'nsfw'
 import * as uuid from 'uuid';
-const { Client } = require('pg');
+const { Pool } = require('pg');
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
 
@@ -36,8 +36,6 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
     // constructor(
     //     @inject(ILogger) protected readonly logger: ILogger) {}
 
-    
-
     configure(app: express.Application) {
 
         // const client = new Client({
@@ -47,34 +45,40 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         const connectionString = process.env.DATABASE_URL;
         console.log("CONSTRING - " + connectionString)
 
-        const pgClient = new Client({
+        const pgPool = new Pool({
             connectionString,
             ssl: false
         });
-        pgClient.connect();
-
-        function addFileToDB(params:string[], event:nsfw.CreatedFileEvent){
+        
+        function pullFilesFromDb(destinationFolder: string, params: string[]) {
+            const selectQuery = "SELECT filename, file WHERE workspace=$1";
+            pgPool.query(selectQuery, [params[0]], (err:Error, res:any)=> {
+                res.rows.forEach((row:any) => {
+                    console.log(row);
+                })
+            });
+        }
+        async function addFileToDB(params:string[], event:nsfw.CreatedFileEvent){
             console.log("Add file");
             console.log(event.directory);
             console.log(event.file);
             const fullfilepath = event.directory + '/' + event.file;
             const onlyFile = fullfilepath.substring(77);
-            pgClient.query("SELECT filename, workspace FROM t_files WHERE filename=$1 AND workspace=$2", [onlyFile,params[0]], (err:any, res:any) =>
+
+            const client = await pgPool.connect();
+            await client.query("SELECT filename, workspace FROM t_files WHERE filename=$1 AND workspace=$2", [onlyFile,params[0]], (err:any, res:any) =>
             {
                 if(err) {
                     console.error("AddFileToDB ERROR");
                     console.error(err.stack);
                     return;
                 }
-                console.log("QUERY");
                 if(res.rowCount > 0){
                     console.log("File Already Exists");
                 } else {
-                    
-
                     var rawData = fs.readFileSync(fullfilepath);
                     console.log(params);
-                    pgClient.query("INSERT INTO t_files(filename, workspace, file) VALUES ($1, $2, $3)",
+                    client.query("INSERT INTO t_files(filename, workspace, file) VALUES ($1, $2, $3)",
                     [onlyFile,params[0], rawData], (err:Error,resI:any) => {
                         if(err) {
                             console.error("AddFileToDB Insert ERROR");
@@ -85,7 +89,65 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                     });
                 }
             });
+            client.release();
         }
+
+
+       async function changeFileToDB(params: string[], event: nsfw.ModifiedFileEvent) {
+            console.log("Change File");
+            console.log(event.directory);
+            console.log(event.file);
+
+
+            const client = await pgPool.connect();
+            try {
+                const fullfilepath = event.directory + '/' + event.file;
+                const onlyFile = fullfilepath.substring(77);
+                var rawData = fs.readFileSync(fullfilepath);
+
+                await client.query("BEGIN");
+                const deleteQuery = "DELETE FROM t_files WHERE filename = $1 AND workspace = $2;"
+                await client.query(deleteQuery,[onlyFile, params[0]]);
+
+                const insertQuery = "INSERT INTO t_files(filename, workspace, file) VALUES ($1, $2, $3)"
+                client.query(insertQuery, [onlyFile,params[0], rawData]);
+
+                await client.query("COMMIT");
+            } catch (e) {
+                await client.query("ROLLBACK");
+            } finally {
+                client.release();
+            }
+        }
+
+        function deleteFileToDB(params: string[], event: nsfw.DeletedFileEvent) {
+            console.log("Delete File");
+            console.log(event.directory);
+            console.log(event.file);
+            const fullfilepath = event.directory + '/' + event.file;
+            const onlyFile = fullfilepath.substring(77);
+            const deleteQuery = "DELETE FROM t_files WHERE filename = $1 AND workspace = $2;"
+            pgPool.query(deleteQuery,[onlyFile, params[0]]);
+        }
+
+        function renameFileToDB(params: string[], event: nsfw.RenamedFileEvent) {
+            console.log("Rename File");
+            console.log(event.directory);
+            console.log(event.oldFile);
+
+            console.log(event.newDirectory);
+            console.log(event.newFile);
+
+            const fullfilepath = event.directory + '/' + event.oldFile;
+            const newfullfilepath = event.newDirectory + '/' + event.newFile;
+            const oldFile = fullfilepath.substring(77);
+            const newFile = newfullfilepath.substring(77);
+
+            const updateQuery = "UPDATE SET filename=$1 WHERE filename=$2 AND workspace=$3";
+            pgPool.query(updateQuery, [newFile, oldFile, params[0]]);
+        }
+
+  
 
         app.post('/setWorkspace', (req, res) => {
             // const widget = this.shell.getWidgetById(FILE_NAVIGATOR_ID) as FileNavigatorWidget | undefined;
@@ -144,16 +206,16 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 function createWorkspace(ip:string){
     let randomFoldername =hostfs + 'tmp/WS-' + uuid.v4() + '/Workspace';
     //let randomFoldername = 'tmp/Workspace';
+    var params = ['workspace'];
      fs.mkdir(randomFoldername, {recursive: true},(err:any) => {
          if (err) throw err;
-         var params = ['workspace'];
          currentEditors[ip] = {
             foldername: randomFoldername,
             time: Date.now(),
             watcher: createWatcher(randomFoldername,params)
          };
      });
-    //pullFilesFromDb(randomFoldername,3);
+    pullFilesFromDb(randomFoldername,params);
 }
 
 
@@ -167,12 +229,15 @@ function createWorkspace(ip:string){
                 }
                 if (event.action === nsfw.actions.DELETED) {
                     console.log('File', path, 'has been removed');
+                    deleteFileToDB(params, event);
                 }
                 if (event.action === nsfw.actions.MODIFIED) {
                     console.log('File', path, 'has been changed');
+                    changeFileToDB(params, event);
                 }
                 if (event.action === nsfw.actions.RENAMED) {
                     console.log('File', path, 'has been changed');
+                    renameFileToDB(params, event);
                 }
             }
         }, {
@@ -213,6 +278,16 @@ function createWorkspace(ip:string){
       }
 }, 60000);
 
+     
+
 
     }
 }
+
+
+
+
+
+
+
+
