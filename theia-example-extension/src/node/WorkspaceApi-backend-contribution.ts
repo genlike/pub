@@ -45,6 +45,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             
         // });
         const connectionString = process.env.DATABASE_URL;
+        console.log("CONSTRING - " + connectionString)
 
         const pgClient = new Client({
             connectionString,
@@ -144,10 +145,11 @@ function createWorkspace(ip:string){
     //let randomFoldername = 'tmp/Workspace';
      fs.mkdir(randomFoldername, {recursive: true},(err:any) => {
          if (err) throw err;
+         var params = ['workspace'];
          currentEditors[ip] = {
             foldername: randomFoldername,
             time: Date.now(),
-            watcher: createWatcher(randomFoldername,['workspace'])
+            watcher: createWatcher(randomFoldername,params)
          };
      });
     //pullFilesFromDb(randomFoldername,3);
