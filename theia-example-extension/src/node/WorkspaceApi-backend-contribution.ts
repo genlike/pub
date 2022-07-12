@@ -204,7 +204,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
 
 function createWorkspace(ip:string){
-    let randomFoldername =hostfs + 'tmp/WS-' + uuid.v4() + '/Workspace';
+    var randomFoldername = hostfs + 'tmp/WS-' + uuid.v4() + '/Workspace';
     //let randomFoldername = 'tmp/Workspace';
     var params = ['workspace'];
      fs.mkdir(randomFoldername, {recursive: true},(err:any) => {
