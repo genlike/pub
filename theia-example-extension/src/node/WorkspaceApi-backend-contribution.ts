@@ -54,7 +54,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log("PullFiles to:");
             console.log(destinationFolder);
             console.log(params[0]);
-            const selectQuery = "SELECT filename, file WHERE workspace=$1";
+            const selectQuery = "SELECT filename, file FROM t_files WHERE workspace=$1";
             pgPool.query(selectQuery, [params[0]], (err:Error, res:any) => {
                 console.log("SELECT")
                 console.log(err); 
@@ -86,7 +86,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 } else {
                     var rawData = fs.readFileSync(fullfilepath);
                     console.log(params);
-                    client.query("INSERT INTO t_files(filename, workspace, file) VALUES ($1, $2, $3)",
+                    client.query("INSERT INTO t_files (filename, workspace, file) VALUES ($1, $2, $3)",
                     [onlyFile,params[0], rawData], (err:Error,resI:any) => {
                         if(err) {
                             console.error("AddFileToDB Insert ERROR");
@@ -151,7 +151,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             const oldFile = fullfilepath.substring(77);
             const newFile = newfullfilepath.substring(77);
 
-            const updateQuery = "UPDATE SET filename=$1 WHERE filename=$2 AND workspace=$3";
+            const updateQuery = "UPDATE t_files SET filename=$1 WHERE filename=$2 AND workspace=$3";
             pgPool.query(updateQuery, [newFile, oldFile, params[0]]);
         }
 
