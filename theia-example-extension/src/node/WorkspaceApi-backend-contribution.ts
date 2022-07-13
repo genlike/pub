@@ -77,7 +77,8 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log(event.directory);
             console.log(event.file);
             const fullfilepath = event.directory + '/' + event.file;
-            const onlyFile = fullfilepath.substring(77);
+            const removeNameLength = 77 + params[0].length + 1;
+            const onlyFile = fullfilepath.substring(removeNameLength);
 
             const client = await pgPool.connect();
             await client.query("SELECT filename, workspace FROM t_files WHERE filename=$1 AND workspace=$2", [onlyFile,params[0]], (err:any, res:any) =>
@@ -116,7 +117,8 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             const client = await pgPool.connect();
             try {
                 const fullfilepath = event.directory + '/' + event.file;
-                const onlyFile = fullfilepath.substring(77);
+                const removeNameLength = 77 + params[0].length + 1;
+                const onlyFile = fullfilepath.substring(removeNameLength);
                 var rawData = fs.readFileSync(fullfilepath);
 
                 await client.query("BEGIN");
@@ -139,7 +141,8 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log(event.directory);
             console.log(event.file);
             const fullfilepath = event.directory + '/' + event.file;
-            const onlyFile = fullfilepath.substring(77);
+            const removeNameLength = 77 + params[0].length + 1;
+            const onlyFile = fullfilepath.substring(removeNameLength);
             const deleteQuery = "DELETE FROM t_files WHERE filename = $1 AND workspace = $2;"
             pgPool.query(deleteQuery,[onlyFile, params[0]]);
         }
@@ -154,8 +157,9 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
             const fullfilepath = event.directory + '/' + event.oldFile;
             const newfullfilepath = event.newDirectory + '/' + event.newFile;
-            const oldFile = fullfilepath.substring(77);
-            const newFile = newfullfilepath.substring(77);
+            const removeNameLength = 77 + params[0].length + 1;
+            const oldFile = fullfilepath.substring(removeNameLength);
+            const newFile = newfullfilepath.substring(removeNameLength);
 
             const updateQuery = "UPDATE t_files SET filename=$1 WHERE filename=$2 AND workspace=$3";
             pgPool.query(updateQuery, [newFile, oldFile, params[0]]);
