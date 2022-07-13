@@ -161,8 +161,6 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             pgPool.query(updateQuery, [newFile, oldFile, params[0]]);
         }
 
-  
-
         app.post('/setWorkspace', (req, res) => {
             // const widget = this.shell.getWidgetById(FILE_NAVIGATOR_ID) as FileNavigatorWidget | undefined;
             // if (!widget) {
@@ -186,7 +184,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log(currentEditors);
             console.log(ip);
             if(!(ip in currentEditors)){
-                createWorkspace(ip);
+                createWorkspace(ip, ['workspace']);
             }
             res.statusCode = 200;
             res.setHeader('Content-Type', 'text/plain');
@@ -196,8 +194,11 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         app.get('/createTempWorkspace', (req, res) => {
             let ip = requestIp.getClientIp(req);
-        
-            createWorkspace(ip);
+            var params = ['workspace'];
+            if (req.query.ws) params = [req.query.ws.toString()];
+            if (req.query.user) params = params.concat( [req.query.user.toString()]);
+            if (req.query.cp) params = params.concat( [req.query.cp.toString()]);
+            createWorkspace(ip, params);
             res.statusCode = 301;
             res.redirect('/');
             res.end();
@@ -206,9 +207,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         app.get('/ping', (req, res) => {
             let ip = requestIp.getClientIp(req);
-            //console.log("PING FROM");
             if(currentEditors[ip]) currentEditors[ip].time =  Date.now();
-            //console.log(currentEditors);
             res.statusCode = 200;
             res.setHeader('Content-Type', 'text/plain');
             res.send("detected workspace of" + ip);
@@ -217,10 +216,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         });
 
 
-function createWorkspace(ip:string){
-    var randomFoldername = hostfs + 'tmp/WS-' + uuid.v4() + '/Workspace';
+function createWorkspace(ip:string, params:string[]){
+    var randomFoldername = hostfs + 'tmp/WS-' + uuid.v4() + '/Workspace-'+ params[0];
     //let randomFoldername = 'tmp/Workspace';
-    var params = ['workspace'];
+
      fs.mkdir(randomFoldername, {recursive: true},(err:any) => {
          if (err) throw err;
          currentEditors[ip] = {
