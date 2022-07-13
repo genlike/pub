@@ -60,8 +60,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 if (err) return;
                 console.log(res); 
                 res.rows.forEach((element:any) => {
-                    console.log(element.filename);
-                    console.log(element.file);
+                    fs.writeFileSync(destinationFolder + '/' + element.filename, element.file);
                 });
             });
         }
