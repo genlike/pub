@@ -47,7 +47,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         const pgPool = new Pool({
             connectionString,
-            ssl: false
+            ssl: {
+                rejectUnauthorized: false
+            }
+            //ssl: false
         });
         
         function pullFilesFromDb(destinationFolder: string, params: string[]) {
