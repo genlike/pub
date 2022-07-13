@@ -4,9 +4,11 @@ import { BackendApplicationContribution } from '@theia/core/lib/node';
 
 //const pg = require('pg');
 import * as fs from 'fs';
+
 import * as nsfw from 'nsfw'
 import * as uuid from 'uuid';
 const { Pool } = require('pg');
+const getDirName = require('path').dirname
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
 
@@ -47,10 +49,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         const pgPool = new Pool({
             connectionString,
-            ssl: {
-                rejectUnauthorized: false
-            }
-            //ssl: false
+            // ssl: {
+            //     rejectUnauthorized: false
+            // }
+            ssl: false
         });
         
         function pullFilesFromDb(destinationFolder: string, params: string[]) {
@@ -63,6 +65,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 if (err) return;
                 console.log(res); 
                 res.rows.forEach((element:any) => {
+                    fs.mkdirSync(getDirName(destinationFolder + '/' + element.filename), {recursive: true});
                     fs.writeFileSync(destinationFolder + '/' + element.filename, element.file);
                 });
             });
