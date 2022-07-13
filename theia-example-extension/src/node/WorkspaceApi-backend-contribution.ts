@@ -59,7 +59,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 console.log("SELECT")
                 if (err) return;
                 console.log(res); 
-                res.rows.array.forEach((element:any) => {
+                res.rows.forEach((element:any) => {
                     console.log(element.filename);
                     console.log(element.file);
                 });
