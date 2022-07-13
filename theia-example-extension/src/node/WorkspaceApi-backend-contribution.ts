@@ -51,13 +51,17 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         });
         
         function pullFilesFromDb(destinationFolder: string, params: string[]) {
+            console.log("PullFiles to:");
+            console.log(destinationFolder);
+            console.log(params[0]);
             const selectQuery = "SELECT filename, file WHERE workspace=$1";
-            pgPool.query(selectQuery, [params[0]], (err:Error, res:any)=> {
-                res.rows.forEach((row:any) => {
-                    console.log(row);
-                })
+            pgPool.query(selectQuery, [params[0]], (err:Error, res:any) => {
+                if (err) return;
+                console.log(res); 
             });
         }
+
+
         async function addFileToDB(params:string[], event:nsfw.CreatedFileEvent){
             console.log("Add file");
             console.log(event.directory);
