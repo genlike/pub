@@ -28,6 +28,15 @@
     "watch": "tsc -w",
     "update-vscode": "node ./node_modules/vscode/bin/install"
   },
+  "theia": {
+    "frontend": {
+      "config": {
+        "preferences": {
+          "files.enableTrash": false
+        }
+      }
+    }
+  },
   "theiaExtensions": [
     {
       "frontend": "lib/browser/theia-example-extension-frontend-module",
