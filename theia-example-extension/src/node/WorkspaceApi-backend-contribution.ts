@@ -56,6 +56,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log(params[0]);
             const selectQuery = "SELECT filename, file WHERE workspace=$1";
             pgPool.query(selectQuery, [params[0]], (err:Error, res:any) => {
+                console.log("SELECT")
+                console.log(err); 
+                console.log(res); 
+
                 if (err) return;
                 console.log(res); 
             });
