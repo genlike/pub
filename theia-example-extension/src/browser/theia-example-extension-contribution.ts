@@ -64,8 +64,6 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     private async setReadOnly(readOnly: boolean){
         this.monacoWorkspace.onDidOpenTextDocument(() =>
         {
-            
-        
             this.monacoEditorService.getActiveCodeEditor()?.updateOptions({readOnly:readOnly});
             let editor = this.monacoEditorService.getActiveCodeEditor();
             if(editor){
@@ -77,7 +75,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
          return path1.substring(path1.length-50) === path2.substring(path2.length - 50);
      }
     configure(app: FrontendApplication): void{
-        
+        this.setReadOnly(this.readOnly);
 
 
         // this.workspaceService.onWorkspaceChanged((e) => {
@@ -108,7 +106,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                  (response: any) => {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
                      //this.readOnly = response.readonly;
-                     this.setReadOnly(this.readOnly);
+                     
                      if (prevRoot != undefined) {
                           if (!this.compareFoldernames(response.data.foldername.toString(), prevRoot.resource.path.toString())){
                               path = '' + response.data.foldername;
