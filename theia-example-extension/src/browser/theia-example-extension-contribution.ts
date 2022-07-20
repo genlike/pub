@@ -26,7 +26,6 @@ import axios from 'axios';
 
 
 var path = '/home/theia/Workspaces';
-var readOnly = true;
 //var remoteHostIp = '192.168.1.120';
 
 export const TheiaExampleExtensionCommand: Command = {
