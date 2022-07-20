@@ -60,17 +60,25 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
             preserveWindow: true
          });
     }
+
+    private async setReadOnly(readOnly: boolean){
+        this.monacoWorkspace.onDidOpenTextDocument(() =>
+        {
+            
+        
+            this.monacoEditorService.getActiveCodeEditor()?.updateOptions({readOnly:readOnly});
+            let editor = this.monacoEditorService.getActiveCodeEditor();
+            if(editor){
+                editor.updateOptions({readOnly:this.readOnly});
+            }
+        });
+    }
      private compareFoldernames(path1: string, path2: string){
          return path1.substring(path1.length-50) === path2.substring(path2.length - 50);
      }
     configure(app: FrontendApplication): void{
         
-        this.monacoWorkspace.onDidOpenTextDocument(() =>
-        {
-            console.log("trigger");
-            console.log(this.readOnly);
-            this.monacoEditorService.getFocusedCodeEditor()?.updateOptions({readOnly:this.readOnly});
-        });
+
 
         // this.workspaceService.onWorkspaceChanged((e) => {
         //     e.forEach((v, i , a)=> {
@@ -100,6 +108,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                  (response: any) => {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
                      //this.readOnly = response.readonly;
+                     this.setReadOnly(this.readOnly);
                      if (prevRoot != undefined) {
                           if (!this.compareFoldernames(response.data.foldername.toString(), prevRoot.resource.path.toString())){
                               path = '' + response.data.foldername;
