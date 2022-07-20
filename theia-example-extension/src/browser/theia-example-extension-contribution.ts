@@ -99,7 +99,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
          axios.get<JSON>('/getWorkspace',{},).then(
                  (response: any) => {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
-                     this.readOnly = response.readonly;
+                     //this.readOnly = response.readonly;
                      if (prevRoot != undefined) {
                           if (!this.compareFoldernames(response.data.foldername.toString(), prevRoot.resource.path.toString())){
                               path = '' + response.data.foldername;
