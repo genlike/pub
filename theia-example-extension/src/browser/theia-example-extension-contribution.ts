@@ -68,7 +68,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
             console.log("onDidOpenTextDocument");
             this.monacoEditorService.getActiveCodeEditor()?.updateOptions({readOnly:readOnly});
             let editor = this.monacoEditorService.getActiveCodeEditor();
-            console.log(editor);
+            console.log("editor - " + editor);
             if(editor){
                 editor.updateOptions({readOnly:this.readOnly});
             }
