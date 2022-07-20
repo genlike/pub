@@ -204,7 +204,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             let token = req.query.token;
             console.log("createTempWorkspace");
             console.log(token);
-            axios.get<String>('http://localhost:3000/token_api/api-token-auth/',{headers:{
+            axios.get<String>('http://localhost:8000/token_api/get-user/',{headers:{
                 'Authorization': token
             }}).then( response => {
                 console.log("response");
