@@ -70,7 +70,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                     fs.mkdirSync(getDirName(destinationFolder + '/' + element.filename), {recursive: true});
                     fs.writeFileSync(destinationFolder + '/' + element.filename, element.file);
                     console.log("Set file permission");
-                    fs.chmodSync(destinationFolder + '/' + element.filename, "-w");
+                    fs.chmodSync(destinationFolder + '/' + element.filename, "444");
                 });
             });
         }
