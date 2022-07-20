@@ -4,7 +4,8 @@ import { Command, CommandContribution, CommandRegistry, MenuContribution, MenuMo
 import { CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
 import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
-//import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
+import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
+import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
 // import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
 //import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
@@ -25,6 +26,7 @@ import axios from 'axios';
 
 
 var path = '/home/theia/Workspaces';
+var readOnly = true;
 //var remoteHostIp = '192.168.1.120';
 
 export const TheiaExampleExtensionCommand: Command = {
@@ -40,7 +42,8 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     protected readonly shell: ApplicationShell;
     constructor(
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
-        //@inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
+        @inject(MonacoEditorService) private readonly monacoEditorService: MonacoEditorService,
+        @inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
         @inject(MessageService) private readonly messageService: MessageService,
 
        
@@ -51,6 +54,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         @inject(ILogger) protected readonly logger: ILogger
     ) { }
 
+    private readOnly = true;
     protected async switchWorkspace(path: string): Promise<void> {
         this.messageService.info(path);
          this.workspaceService.open(new TheiaURI(path), {
@@ -61,6 +65,11 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
          return path1.substring(path1.length-50) === path2.substring(path2.length - 50);
      }
     configure(app: FrontendApplication): void{
+        
+        this.monacoWorkspace.onDidOpenTextDocument(() =>
+        {
+            this.monacoEditorService.getActiveCodeEditor()?.updateOptions({readOnly:this.readOnly});
+        });
 
         // this.workspaceService.onWorkspaceChanged((e) => {
         //     e.forEach((v, i , a)=> {
@@ -86,18 +95,19 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     }
     onStart(app: FrontendApplication):void {
         
-         axios.get<String>('/getWorkspace',{},).then(
-                 response => {
+         axios.get<JSON>('/getWorkspace',{},).then(
+                 (response: any) => {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
+                     this.readOnly = response.readonly;
                      if (prevRoot != undefined) {
                           if (!this.compareFoldernames(response.data.toString(), prevRoot.resource.path.toString())){
-                              path = '' + response.data;
-                              this.messageService.info("Changing Workspace to:" + response.data + " PREV:" + prevRoot.resource.path);
+                              path = '' + response.foldername;
+                              this.messageService.info("Changing Workspace to:" + response.foldername + " PREV:" + prevRoot.resource.path);
                               this.switchWorkspace(path);
                          }
                      } else {
-                         path = '' + response.data;
-                         this.messageService.info("Setting Workspace to:" + response.data + " STATUS:" + response.status);
+                         path = '' + response.foldername;
+                         this.messageService.info("Setting Workspace to:" + response.foldername + " STATUS:" + response.status);
                          this.switchWorkspace(path);
                      }
                  }

@@ -69,8 +69,6 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 res.rows.forEach((element:any) => {
                     fs.mkdirSync(getDirName(destinationFolder + '/' + element.filename), {recursive: true});
                     fs.writeFileSync(destinationFolder + '/' + element.filename, element.file);
-                    console.log("Set file permission");
-                    fs.chmodSync(destinationFolder + '/' + element.filename, "444");
                 });
             });
         }
@@ -195,8 +193,11 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 createWorkspace(ip, ['workspace']);
             }
             res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/plain');
-            res.send(currentEditors[ip].foldername);
+            res.setHeader('Content-Type', 'json/application');
+            res.json({
+                foldername: currentEditors[ip].foldername,  
+                readonly: true
+            });
             res.end();
         });
 
