@@ -196,7 +196,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             res.setHeader('Content-Type', 'json/application');
             res.json({
                 foldername: currentEditors[ip].foldername,  
-                readonly: true
+                readonly: false
             });
             res.end();
         });
