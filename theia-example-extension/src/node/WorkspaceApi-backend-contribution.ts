@@ -202,12 +202,16 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             let ip = requestIp.getClientIp(req);
 
             let token = req.query.token;
-            console.log("createTempWorkspace")
+            console.log("createTempWorkspace");
             console.log(token);
             axios.get<String>('http://localhost:3000/token_api/api-token-auth/',{headers:{
                 'Authorization': token
             }}).then( response => {
+                console.log("response");
                 console.log(response);
+            }).catch(reason => {
+                console.log("catch");
+                console.log(reason);
             });
             var params = ['workspace'];
             if (req.query.ws) params = [req.query.ws.toString()];
