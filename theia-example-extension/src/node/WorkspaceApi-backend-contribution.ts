@@ -7,10 +7,12 @@ import * as fs from 'fs';
 
 import * as nsfw from 'nsfw'
 import * as uuid from 'uuid';
+import axios from 'axios';
 const { Pool } = require('pg');
 const getDirName = require('path').dirname
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
+
 
 // import { FileNavigatorWidget, FILE_NAVIGATOR_ID } from '@theia/navigator/lib/browser/navigator-widget';
 // import { WorkspaceNode } from '@theia/navigator/lib/browser/navigator-tree';
@@ -198,6 +200,15 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         app.get('/createTempWorkspace', (req, res) => {
             let ip = requestIp.getClientIp(req);
+
+            let token = req.query.token;
+            console.log("createTempWorkspace")
+            console.log(token);
+            axios.get<String>('http://localhost:3000/token_api/api-token-auth/',{headers:{
+                'Authorization': token
+            }}).then( response => {
+                console.log(response);
+            });
             var params = ['workspace'];
             if (req.query.ws) params = [req.query.ws.toString()];
             if (req.query.user) params = params.concat( [req.query.user.toString()]);
