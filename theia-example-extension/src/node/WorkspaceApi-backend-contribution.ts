@@ -314,8 +314,28 @@ function createWorkspace(ip:string, params:string[]){
 
 
 function getRemoteParams(token: string ):string[] {
-
-
+    console.log("createTempWorkspace");
+    console.log(token);
+    axios.get<String>('http://localhost:8000/token_api/get-user/',{headers:{
+        'Authorization': token
+    }}).then( response => {
+        console.log("response");
+        console.log(response);
+    }).catch(reason => {
+        console.log("catch");
+        console.log(reason);
+    });            
+    console.log("createTempWorkspace");
+    console.log(token);
+    axios.get<String>('http://localhost:8000/token_api/get-user/',{headers:{
+        'Authorization': token
+    }}).then( response => {
+        console.log("response");
+        console.log(response);
+    }).catch(reason => {
+        console.log("catch");
+        console.log(reason);
+    });
 
     return  ['workspace'];
 }
