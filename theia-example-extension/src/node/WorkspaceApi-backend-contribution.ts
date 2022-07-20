@@ -69,6 +69,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 res.rows.forEach((element:any) => {
                     fs.mkdirSync(getDirName(destinationFolder + '/' + element.filename), {recursive: true});
                     fs.writeFileSync(destinationFolder + '/' + element.filename, element.file);
+                    fs.chmodSync(destinationFolder + '/' + element.filename, "0444");
                 });
             });
         }
@@ -200,20 +201,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         app.get('/createTempWorkspace', (req, res) => {
             let ip = requestIp.getClientIp(req);
-
             let token = req.query.token;
-            console.log("createTempWorkspace");
-            console.log(token);
-            axios.get<String>('http://localhost:8000/token_api/get-user/',{headers:{
-                'Authorization': token
-            }}).then( response => {
-                console.log("response");
-                console.log(response);
-            }).catch(reason => {
-                console.log("catch");
-                console.log(reason);
-            });
-            var params = ['workspace'];
+
+
+            var params = token ? getRemoteParams(token.toString()): ['itoi'];
             if (req.query.ws) params = [req.query.ws.toString()];
             if (req.query.user) params = params.concat( [req.query.user.toString()]);
             if (req.query.cp) params = params.concat( [req.query.cp.toString()]);
@@ -231,7 +222,6 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             res.setHeader('Content-Type', 'text/plain');
             res.send("detected workspace of" + ip);
             res.end();
-        
         });
 
 
@@ -322,4 +312,11 @@ function createWorkspace(ip:string, params:string[]){
 
 
 
+
+function getRemoteParams(token: string ):string[] {
+
+
+
+    return  ['workspace'];
+}
 
