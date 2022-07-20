@@ -68,7 +68,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         this.monacoWorkspace.onDidOpenTextDocument(() =>
         {
             console.log("trigger");
-            this.monacoEditorService.getActiveCodeEditor()?.updateOptions({readOnly:this.readOnly});
+            this.monacoEditorService.getFocusedCodeEditor()?.updateOptions({readOnly:this.readOnly});
         });
 
         // this.workspaceService.onWorkspaceChanged((e) => {
@@ -100,9 +100,9 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
                      this.readOnly = response.readonly;
                      if (prevRoot != undefined) {
-                          if (!this.compareFoldernames(response.data.toString(), prevRoot.resource.path.toString())){
-                              path = '' + response.foldername;
-                              this.messageService.info("Changing Workspace to:" + response.foldername + " PREV:" + prevRoot.resource.path);
+                          if (!this.compareFoldernames(response.data.foldername.toString(), prevRoot.resource.path.toString())){
+                              path = '' + response.data.foldername;
+                              this.messageService.info("Changing Workspace to:" + response.data.foldername + " PREV:" + prevRoot.resource.path);
                               this.switchWorkspace(path);
                          }
                      } else {
