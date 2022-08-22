@@ -4,12 +4,12 @@ import { BackendApplicationContribution } from '@theia/core/lib/node';
 
 //const pg = require('pg');
 import * as fs from 'fs';
-
 import * as nsfw from 'nsfw'
 import * as uuid from 'uuid';
-import axios from 'axios';
 const { Pool } = require('pg');
 const getDirName = require('path').dirname
+const crypto = require('crypto')
+
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
 
@@ -20,7 +20,9 @@ let requestIp = require('request-ip');
 
 
 var path = "file:///C:/Users/ricar/Documents/Projectos/theia-example-extension/browser-app";
-let hostfs = "/home/theia/workspaces/"
+var hostfs = "/home/theia/workspaces/";
+var COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
+var itlingoCloudURL = "http://localhost:8000";
 var currentEditors: {[ip:string]: Editor} = {};
 
 
@@ -167,6 +169,18 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             pgPool.query(updateQuery, [newFile, oldFile, params[0]]);
         }
 
+        function decrypt(iv: string, t: string): string[] {
+            const initialVector = Buffer.from(iv, 'utf8');
+            const token = Buffer.from(t, 'utf8');
+            const hash = crypto.createHash('sha256');
+            const key = hash.digest(COM_KEY);
+            const decipher = crypto.createDecipheriv('aes-256-cbc', key, initialVector);
+            const deciphered = decipher.update(token) + decipher.final();
+            let result = JSON.parse(deciphered);
+            console.log(result);
+            return ['']
+        }
+
         app.post('/setWorkspace', (req, res) => {
             // const widget = this.shell.getWidgetById(FILE_NAVIGATOR_ID) as FileNavigatorWidget | undefined;
             // if (!widget) {
@@ -203,18 +217,25 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         app.get('/createTempWorkspace', (req, res) => {
             let ip = requestIp.getClientIp(req);
-            let token = req.query.token;
-
-
-            var params = token ? getRemoteParams(token.toString()): ['itoi'];
-            if (req.query.ws) params = [req.query.ws.toString()];
-            if (req.query.user) params = params.concat( [req.query.user.toString()]);
-            if (req.query.cp) params = params.concat( [req.query.cp.toString()]);
-            createWorkspace(ip, params);
-            res.statusCode = 301;
-            res.redirect('/');
-            res.end();
-        
+            if(req.query.iv == undefined || req.query.t == undefined) {
+                res.statusCode = 301;
+                res.redirect(itlingoCloudURL);
+                res.end();
+            } else {
+                let iv = req.query.iv as string;
+                let token = req.query.t as string;
+                
+                let params = decrypt(iv, token);
+    
+                // var params = token ? getRemoteParams(token.toString()): ['itoi'];
+                // if (req.query.ws) params = [req.query.ws.toString()];
+                // if (req.query.user) params = params.concat( [req.query.user.toString()]);
+                // if (req.query.cp) params = params.concat( [req.query.cp.toString()]);
+                createWorkspace(ip, params);
+                res.statusCode = 301;
+                res.redirect('/');
+                res.end();
+            }
         });
 
         app.get('/ping', (req, res) => {
@@ -315,30 +336,19 @@ function createWorkspace(ip:string, params:string[]){
 
 
 
-function getRemoteParams(token: string ):string[] {
-    console.log("createTempWorkspace");
-    console.log(token);
-    axios.get<String>('http://localhost:8000/token_api/get-user/',{headers:{
-        'Authorization': token
-    }}).then( response => {
-        console.log("response");
-        console.log(response);
-    }).catch(reason => {
-        console.log("catch");
-        console.log(reason);
-    });            
-    console.log("createTempWorkspace");
-    console.log(token);
-    axios.get<String>('http://localhost:8000/token_api/get-user/',{headers:{
-        'Authorization': token
-    }}).then( response => {
-        console.log("response");
-        console.log(response);
-    }).catch(reason => {
-        console.log("catch");
-        console.log(reason);
-    });
+// function getRemoteParams(token: string ):string[] {
+//     console.log("createTempWorkspace");
+//     console.log(token);
+//     axios.get<String>('http://localhost:8000/token_api/get-user/',{headers:{
+//         'Authorization': token
+//     }}).then( response => {
+//         console.log("response");
+//         console.log(response);
+//     }).catch(reason => {
+//         console.log("catch");
+//         console.log(reason);
+//     });            
 
-    return  ['workspace'];
-}
+//     return  ['workspace'];
+// }
 
