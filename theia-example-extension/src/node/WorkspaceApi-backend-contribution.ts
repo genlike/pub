@@ -184,6 +184,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log("key: " + key);
             const decipher = crypto.createDecipheriv('aes-256-cbc', key, initialVector.slice(0,16));
             const deciphered = decipher.update(token) + decipher.final();
+            console.log("RESULT");
             console.log(deciphered);
             let result = JSON.parse(deciphered);
             console.log(result);
