@@ -170,12 +170,16 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         }
 
         function decrypt(iv: string, t: string): string[] {
+            console.log("decrypt")
             console.log("IV: " + iv)
             console.log("TK: " + t)
             const initialVector = Buffer.from(iv, 'utf8');
             const token = Buffer.from(t, 'utf8');
-            const hash = crypto.createHash('sha256');
-            const key = hash.digest(COM_KEY);
+            console.log("buffer from")
+            console.log("IV: " + iv)
+            console.log("TK: " + t)
+            const key = Buffer.from(COM_KEY,'utf8');
+            console.log("key: " + key);
             const decipher = crypto.createDecipheriv('aes-256-cbc', key, initialVector);
             const deciphered = decipher.update(token) + decipher.final();
             let result = JSON.parse(deciphered);
