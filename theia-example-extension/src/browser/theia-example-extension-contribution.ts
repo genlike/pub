@@ -114,8 +114,9 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
             console.log("user auth status: " + response.status);
             if(response.status != 200){
                 authenticated = false;
+                window.location.href = itlingoCloudURL;
             }
-        }).then(() => {
+        }).catch((error) => {
             if (!authenticated) {
                 window.location.href = itlingoCloudURL;
             }
