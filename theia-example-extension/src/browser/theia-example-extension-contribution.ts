@@ -68,16 +68,17 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         {
             console.log("onDidOpenTextDocument");
             //this.monacoEditorService.getActiveCodeEditor()?.updateOptions({readOnly:readOnly});
-            let editor = this.monacoEditorService.getFocusedCodeEditor();
-            console.log("editor - " + editor);
-            console.log(editor);
-            if(editor){
-                if (editor instanceof MonacoEditor) {
-                    const codeEditor = editor.getControl();
-                //    const configuration = codeEditor.getRawConfiguration();
-                    codeEditor.updateOptions({ readOnly: true });
+            this.monacoEditorService.listCodeEditors().forEach(editor => {
+                console.log("editor - " + editor);
+                console.log(editor);
+                if(editor){
+                    if (editor instanceof MonacoEditor) {
+                        const codeEditor = editor.getControl();
+                    //    const configuration = codeEditor.getRawConfiguration();
+                        codeEditor.updateOptions({ readOnly: true });
+                    }
                 }
-            }
+            }); 
         });
     }
      private compareFoldernames(path1: string, path2: string){
