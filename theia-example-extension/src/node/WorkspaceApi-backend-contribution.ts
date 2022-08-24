@@ -10,7 +10,6 @@ const { Pool } = require('pg');
 const getDirName = require('path').dirname
 const crypto = require('crypto')
 
-const util = require("util");
 
 //var getDirName = require('path').dirname;
 let requestIp = require('request-ip');
@@ -229,7 +228,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 
                 let params = decrypt(iv, token);
                 console.log("after decrypt");
-                util.inspect(params);
+                console.log(params);
                 // var params = token ? getRemoteParams(token.toString()): ['itoi'];
                 // if (req.query.ws) params = [req.query.ws.toString()];
                 // if (req.query.user) params = params.concat( [req.query.user.toString()]);
