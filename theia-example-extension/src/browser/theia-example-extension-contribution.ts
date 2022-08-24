@@ -5,9 +5,9 @@ import { CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
 import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
-import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
+//import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
-import { MonacoEditor } from "@theia/monaco/lib/browser/monaco-editor";
+//import { MonacoEditor } from "@theia/monaco/lib/browser/monaco-editor";
 // import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
 //import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
 
@@ -43,7 +43,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     protected readonly shell: ApplicationShell;
     constructor(
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
-        @inject(MonacoEditorService) private readonly monacoEditorService: MonacoEditorService,
+        //@inject(MonacoEditorService) private readonly monacoEditorService: MonacoEditorService,
         @inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
         @inject(MessageService) private readonly messageService: MessageService,
 
@@ -64,21 +64,13 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     }
 
     private async setReadOnly(readOnly: boolean){
-        this.monacoWorkspace.onDidOpenTextDocument(() =>
+        this.monacoWorkspace.onDidOpenTextDocument((editor: any) : any =>
         {
             console.log("onDidOpenTextDocument");
-            //this.monacoEditorService.getActiveCodeEditor()?.updateOptions({readOnly:readOnly});
-            let i = 0;
-            this.monacoEditorService.listCodeEditors().forEach(editor => {
-                if (editor instanceof MonacoEditor) {
-                    console.log("editor - " + i++);
-                    console.log(editor);
-                    const standaloneMonacoEditor = (editor as any).editor // Gets the actual monaco editor. It is protected, so we have to cast to any beforehand
-                    //const codeEditor = editor.getControl();
-                    //codeEditor.updateOptions({ readOnly: true });
-                    standaloneMonacoEditor.updateOptions({ readOnly: true });
-                }
-            }); 
+            //const standaloneMonacoEditor = (editor as any).editor // Gets the actual monaco editor. It is protected, so we have to cast to any beforehand
+            const codeEditor = editor.getControl();
+            codeEditor.updateOptions({ readOnly: true });
+            //standaloneMonacoEditor.updateOptions({ readOnly: true });
         });
     }
      private compareFoldernames(path1: string, path2: string){
