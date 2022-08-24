@@ -105,7 +105,6 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         //});
     }
     onStart(app: FrontendApplication):void {
-        let authenticated = true;
         axios.get<JSON>( itlingoCloudURL + 'token_api/get-client-info/',{headers: {
             // 'Access-Control-Allow-Origin': '*',
             // 'Access-Control-Allow-Headers': '*',
@@ -113,7 +112,6 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
           }},).then((response: any) => {
             console.log("user auth status: " + response.status);
             if(response.status != 200){
-                authenticated = false;
                 window.location.href = itlingoCloudURL;
             }
         }).catch((error) => {
