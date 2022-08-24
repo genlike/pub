@@ -209,7 +209,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log(currentEditors);
             console.log(ip);
             if(!(ip in currentEditors)){
-                res.redirect(itlingoCloudURL);
+                res.statusCode = 401;
                 res.end();
                 return
             }
