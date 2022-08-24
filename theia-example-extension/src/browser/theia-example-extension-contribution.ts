@@ -119,10 +119,10 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                             this.switchWorkspace(path);
                         }
                     } else {
-                        path = '' + response.foldername;
+                        path = '' + response.data.foldername;
                         console.log("getWorkspace2");
                         console.log(path);
-                        this.messageService.info("Setting Workspace to:" + response.foldername + " STATUS:" + response.status);
+                        this.messageService.info("Setting Workspace to:" + response.data.foldername + " STATUS:" + response.status);
                         this.switchWorkspace(path);
                     }
                  }
