@@ -262,14 +262,14 @@ export class ItLingoGrammarContribution implements LanguageGrammarDefinitionCont
 
 
 export class YourEditorManager extends EditorManager {
-
     async open(uri: URI, options?: EditorOpenerOptions): Promise<EditorWidget> {
         const widget = await super.open(uri, options);
         if (true) {
             const { editor } = widget;
+          //  const configuration = editor.getRawConfiguration();
             if (editor instanceof MonacoEditor) {
                 const codeEditor = editor.getControl();
-                //const configuration = codeEditor.getRawConfiguration();
+            //    const configuration = codeEditor.getRawConfiguration();
                 codeEditor.updateOptions({ readOnly: true });
             }
         }
