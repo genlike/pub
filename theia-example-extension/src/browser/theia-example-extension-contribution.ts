@@ -63,7 +63,6 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     }
 
     private async setReadOnly(readOnly: boolean){
-        console.log("setReadOnly");
         this.monacoWorkspace.onDidOpenTextDocument(() =>
         {
             console.log("onDidOpenTextDocument");
@@ -72,6 +71,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
             console.log("editor - " + editor);
             if(editor){
                 editor.updateOptions({readOnly:this.readOnly});
+                editor.render();
             }
         });
     }
@@ -80,8 +80,6 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
      }
     configure(app: FrontendApplication): void{
         this.setReadOnly(this.readOnly);
-
-
         // this.workspaceService.onWorkspaceChanged((e) => {
         //     e.forEach((v, i , a)=> {
         //         console.log("For each");
