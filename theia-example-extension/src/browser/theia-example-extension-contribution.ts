@@ -7,6 +7,7 @@ import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
 import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
+import { MonacoEditor } from "@theia/monaco/lib/browser/monaco-editor";
 // import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
 //import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
 
@@ -15,13 +16,15 @@ import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service
 import { ILogger } from "@theia/core/lib/common";
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 //import URI from '@theia/core/lib/common/uri';
-import TheiaURI from '@theia/core/lib/common/uri';
+import TheiaURI, { URI } from '@theia/core/lib/common/uri';
 import { languages } from '@theia/monaco-editor-core';
 
 
 
 //import { FileChangeCollection } from '@theia/filesystem/src/node/file-change-collection';
 import axios from 'axios';
+import { EditorManager, EditorOpenerOptions } from '@theia/editor/lib/browser/editor-manager';
+import { EditorWidget } from '@theia/editor/lib/browser/editor-widget';
 
 
 
@@ -73,8 +76,9 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                 const standaloneMonacoEditor = (editor as any) // Gets the actual monaco editor. It is protected, so we have to cast to any beforehand
                 standaloneMonacoEditor.updateOptions({ readOnly: true })
                 console.log("editor - " + editor);
-                // editor.updateOptions({readOnly:this.readOnly});
-                // editor.render();
+                console.log(editor);
+                editor.updateOptions({readOnly:this.readOnly});
+                editor.render();
             }
         });
     }
@@ -255,3 +259,21 @@ export class ItLingoGrammarContribution implements LanguageGrammarDefinitionCont
 }
 
 
+
+
+export class YourEditorManager extends EditorManager {
+
+    async open(uri: URI, options?: EditorOpenerOptions): Promise<EditorWidget> {
+        const widget = await super.open(uri, options);
+        if (true) {
+            const { editor } = widget;
+            if (editor instanceof MonacoEditor) {
+                const codeEditor = editor.getControl();
+                //const configuration = codeEditor.getRawConfiguration();
+                codeEditor.updateOptions({ readOnly: true });
+            }
+        }
+        return widget;
+    }
+
+}
