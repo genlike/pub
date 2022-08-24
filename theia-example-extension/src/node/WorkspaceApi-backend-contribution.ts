@@ -228,6 +228,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 let token = req.query.t as string;
                 
                 let params = decrypt(iv, token);
+                console.log("after decrypt");
                 util.inspect(params);
                 // var params = token ? getRemoteParams(token.toString()): ['itoi'];
                 // if (req.query.ws) params = [req.query.ws.toString()];
