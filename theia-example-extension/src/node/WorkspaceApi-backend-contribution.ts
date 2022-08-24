@@ -23,7 +23,7 @@ let requestIp = require('request-ip');
 var path = "file:///C:/Users/ricar/Documents/Projectos/theia-example-extension/browser-app";
 var hostfs = "/home/theia/workspaces/";
 var COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
-var itlingoCloudURL = "http://localhost:8000";
+var itlingoCloudURL = "http://localhost:8000/";
 var currentEditors: {[ip:string]: Editor} = {};
 
 
@@ -179,10 +179,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             const decipher = crypto.createDecipheriv('aes-256-cbc', key, initialVector.slice(0,16));
             const deciphered = decipher.update(token) + decipher.final();
             let result = JSON.parse(deciphered);
-            console.log("WS: " + result['workspace']);
-            console.log("US: " + result['user']);
-            console.log("CM: " + result['organization']);
-            console.log("WR: " + result['write']);
+            // console.log("WS: " + result['workspace']);
+            // console.log("US: " + result['user']);
+            // console.log("CM: " + result['organization']);
+            // console.log("WR: " + result['write']);
             return [result['workspace'], result['user'], result['organization'], result['write']?"true":"false"]
         }
 
@@ -209,7 +209,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log(currentEditors);
             console.log(ip);
             if(!(ip in currentEditors)){
-                res.statusCode = 200;
+                res.redirect(itlingoCloudURL);
                 res.end();
                 return
             }

@@ -105,19 +105,19 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         //});
     }
     onStart(app: FrontendApplication):void {
-        axios.get<JSON>( itlingoCloudURL + 'token_api/get-client-info/',{headers: {
-            // 'Access-Control-Allow-Origin': '*',
-            // 'Access-Control-Allow-Headers': '*',
-            'Content-Type': 'text/plain',
-          }},).then((response: any) => {
-            console.log("user auth status: " + response.status);
-            // if(response.status != 200){
-            //     window.location.href = itlingoCloudURL;
-            // }
-        }).catch((error) => {
-                window.location.href = itlingoCloudURL;
-                throw error;
-        });
+        // axios.get<JSON>( itlingoCloudURL + 'token_api/get-client-info/',{headers: {
+        //     // 'Access-Control-Allow-Origin': '*',
+        //     // 'Access-Control-Allow-Headers': '*',
+        //     'Content-Type': 'text/plain',
+        //   }},).then((response: any) => {
+        //     console.log("user auth status: " + response.status);
+        //     // if(response.status != 200){
+        //     //     window.location.href = itlingoCloudURL;
+        //     // }
+        // }).catch((error) => {
+        //         window.location.href = itlingoCloudURL;
+        //         throw error;
+        // });
          axios.get<JSON>('/getWorkspace',{},).then(
                  (response: any) => {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
