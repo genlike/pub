@@ -5,9 +5,9 @@ import { CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
 import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
-//import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
+import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
-//import { MonacoEditor } from "@theia/monaco/lib/browser/monaco-editor";
+import { MonacoEditor } from "@theia/monaco/lib/browser/monaco-editor";
 // import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
 //import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
 
@@ -16,13 +16,15 @@ import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service
 import { ILogger } from "@theia/core/lib/common";
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 //import URI from '@theia/core/lib/common/uri';
-import TheiaURI from '@theia/core/lib/common/uri';
+import TheiaURI, { URI } from '@theia/core/lib/common/uri';
 import { languages } from '@theia/monaco-editor-core';
 
 
 
 //import { FileChangeCollection } from '@theia/filesystem/src/node/file-change-collection';
 import axios from 'axios';
+import { EditorManager, EditorOpenerOptions } from '@theia/editor/lib/browser/editor-manager';
+import { EditorWidget } from '@theia/editor/lib/browser/editor-widget';
 
 
 
@@ -43,7 +45,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     protected readonly shell: ApplicationShell;
     constructor(
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
-        //@inject(MonacoEditorService) private readonly monacoEditorService: MonacoEditorService,
+        @inject(MonacoEditorService) private readonly monacoEditorService: MonacoEditorService,
         @inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
         @inject(MessageService) private readonly messageService: MessageService,
 
@@ -64,13 +66,19 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     }
 
     private async setReadOnly(readOnly: boolean){
-        this.monacoWorkspace.onDidOpenTextDocument((editor: any) : any =>
+        this.monacoWorkspace.onDidOpenTextDocument(() =>
         {
             console.log("onDidOpenTextDocument");
-            //const standaloneMonacoEditor = (editor as any).editor // Gets the actual monaco editor. It is protected, so we have to cast to any beforehand
-            const codeEditor = editor.getControl();
-            codeEditor.updateOptions({ readOnly: true });
-            //standaloneMonacoEditor.updateOptions({ readOnly: true });
+            this.monacoEditorService.getActiveCodeEditor()?.updateOptions({readOnly:readOnly});
+            let editor = this.monacoEditorService.getActiveCodeEditor();
+            console.log("editor - " + editor);
+            if(editor){
+                if (editor instanceof MonacoEditor) {
+                    const codeEditor = editor.getControl();
+                //    const configuration = codeEditor.getRawConfiguration();
+                    codeEditor.updateOptions({ readOnly: true });
+                }
+            }
         });
     }
      private compareFoldernames(path1: string, path2: string){
@@ -246,5 +254,25 @@ export class ItLingoGrammarContribution implements LanguageGrammarDefinitionCont
             }
         }
     };
+
+}
+
+
+
+
+export class YourEditorManager extends EditorManager {
+    async open(uri: URI, options?: EditorOpenerOptions): Promise<EditorWidget> {
+        const widget = await super.open(uri, options);
+        if (true) {
+            const { editor } = widget;
+          //  const configuration = editor.getRawConfiguration();
+            if (editor instanceof MonacoEditor) {
+                const codeEditor = editor.getControl();
+            //    const configuration = codeEditor.getRawConfiguration();
+                codeEditor.updateOptions({ readOnly: true });
+            }
+        }
+        return widget;
+    }
 
 }
