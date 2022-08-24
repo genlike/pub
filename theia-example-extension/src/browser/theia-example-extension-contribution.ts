@@ -27,6 +27,7 @@ import axios from 'axios';
 
 var path = '/home/theia/Workspaces';
 //var remoteHostIp = '192.168.1.120';
+var itlingoCloudURL = 'http://localhost:8000/token_api/get-client-info'
 
 export const TheiaExampleExtensionCommand: Command = {
     id: 'TheiaExampleExtension.command',
@@ -104,7 +105,11 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         //});
     }
     onStart(app: FrontendApplication):void {
-        
+        axios.get<JSON>('http://localhost:8000/token_api/get-client-info',{},).then((response: any) => {
+            if(response.status != 200){
+                window.location.href = 'http://localhost:8000/';
+            }
+        });
          axios.get<JSON>('/getWorkspace',{},).then(
                  (response: any) => {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
