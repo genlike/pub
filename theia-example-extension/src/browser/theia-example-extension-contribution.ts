@@ -70,7 +70,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
             let editor = this.monacoEditorService.getActiveCodeEditor();
             console.log("editor - " + editor);
             if(editor){
-                const standaloneMonacoEditor = (editor as any).editor // Gets the actual monaco editor. It is protected, so we have to cast to any beforehand
+                const standaloneMonacoEditor = (editor as any) // Gets the actual monaco editor. It is protected, so we have to cast to any beforehand
                 standaloneMonacoEditor.updateOptions({ readOnly: true })
                 console.log("editor - " + editor);
                 // editor.updateOptions({readOnly:this.readOnly});
