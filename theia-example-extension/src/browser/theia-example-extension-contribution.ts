@@ -27,7 +27,7 @@ import axios from 'axios';
 
 var path = '/home/theia/Workspaces';
 //var remoteHostIp = '192.168.1.120';
-var itlingoCloudURL = 'http://localhost:8000/'
+
 
 export const TheiaExampleExtensionCommand: Command = {
     id: 'TheiaExampleExtension.command',
