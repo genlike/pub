@@ -16,15 +16,13 @@ import { MonacoEditor } from "@theia/monaco/lib/browser/monaco-editor";
 import { ILogger } from "@theia/core/lib/common";
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 //import URI from '@theia/core/lib/common/uri';
-import TheiaURI, { URI } from '@theia/core/lib/common/uri';
+import TheiaURI from '@theia/core/lib/common/uri';
 import { languages } from '@theia/monaco-editor-core';
 
 
 
 //import { FileChangeCollection } from '@theia/filesystem/src/node/file-change-collection';
 import axios from 'axios';
-import { EditorManager, EditorOpenerOptions } from '@theia/editor/lib/browser/editor-manager';
-import { EditorWidget } from '@theia/editor/lib/browser/editor-widget';
 
 
 
@@ -73,12 +71,11 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
             let editor = this.monacoEditorService.getActiveCodeEditor();
             console.log("editor - " + editor);
             if(editor){
-                const standaloneMonacoEditor = (editor as any) // Gets the actual monaco editor. It is protected, so we have to cast to any beforehand
-                standaloneMonacoEditor.updateOptions({ readOnly: true })
-                console.log("editor - " + editor);
-                console.log(editor);
-                editor.updateOptions({readOnly:this.readOnly});
-                editor.render();
+                if (editor instanceof MonacoEditor) {
+                    const codeEditor = editor.getControl();
+                //    const configuration = codeEditor.getRawConfiguration();
+                    codeEditor.updateOptions({ readOnly: true });
+                }
             }
         });
     }
@@ -255,25 +252,5 @@ export class ItLingoGrammarContribution implements LanguageGrammarDefinitionCont
             }
         }
     };
-
-}
-
-
-
-
-export class YourEditorManager extends EditorManager {
-    async open(uri: URI, options?: EditorOpenerOptions): Promise<EditorWidget> {
-        const widget = await super.open(uri, options);
-        if (true) {
-            const { editor } = widget;
-          //  const configuration = editor.getRawConfiguration();
-            if (editor instanceof MonacoEditor) {
-                const codeEditor = editor.getControl();
-            //    const configuration = codeEditor.getRawConfiguration();
-                codeEditor.updateOptions({ readOnly: true });
-            }
-        }
-        return widget;
-    }
 
 }
