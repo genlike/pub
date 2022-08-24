@@ -105,7 +105,10 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         //});
     }
     onStart(app: FrontendApplication):void {
-        axios.get<JSON>( itlingoCloudURL + 'token_api/get-client-info',{},).then((response: any) => {
+        axios.get<JSON>( itlingoCloudURL + 'token_api/get-client-info',{headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+          }},).then((response: any) => {
             console.log("user auth status: " + response.status);
             if(response.status != 200){
                 window.location.href = itlingoCloudURL;
