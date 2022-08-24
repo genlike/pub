@@ -27,7 +27,7 @@ import axios from 'axios';
 
 var path = '/home/theia/Workspaces';
 //var remoteHostIp = '192.168.1.120';
-
+var itlingoCloudURL = "http://localhost:8000/";
 
 export const TheiaExampleExtensionCommand: Command = {
     id: 'TheiaExampleExtension.command',
@@ -139,7 +139,9 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                         this.switchWorkspace(path);
                     }
                  }
-             );
+             ).catch((error) => {
+                window.location.href = itlingoCloudURL;
+             });
 
          setInterval(() =>
          {
