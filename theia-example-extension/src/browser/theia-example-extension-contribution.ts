@@ -117,9 +117,8 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                 window.location.href = itlingoCloudURL;
             }
         }).catch((error) => {
-            if (!authenticated) {
                 window.location.href = itlingoCloudURL;
-            }
+                throw error;
         });
          axios.get<JSON>('/getWorkspace',{},).then(
                  (response: any) => {
