@@ -110,17 +110,21 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
                      //this.readOnly = response.readonly;
                      
-                     if (prevRoot != undefined) {
-                          if (!this.compareFoldernames(response.data.foldername.toString(), prevRoot.resource.path.toString())){
-                              path = '' + response.data.foldername;
-                              this.messageService.info("Changing Workspace to:" + response.data.foldername + " PREV:" + prevRoot.resource.path);
-                              this.switchWorkspace(path);
-                         }
-                     } else {
-                         path = '' + response.foldername;
-                         this.messageService.info("Setting Workspace to:" + response.foldername + " STATUS:" + response.status);
-                         this.switchWorkspace(path);
-                     }
+                    if (prevRoot != undefined) {
+                        if (!this.compareFoldernames(response.data.foldername.toString(), prevRoot.resource.path.toString())){
+                            path = '' + response.data.foldername;
+                            console.log("getWorkspace1")
+                            console.log(path)
+                            this.messageService.info("Changing Workspace to:" + response.data.foldername + " PREV:" + prevRoot.resource.path);
+                            this.switchWorkspace(path);
+                        }
+                    } else {
+                        path = '' + response.foldername;
+                        console.log("getWorkspace2");
+                        console.log(path);
+                        this.messageService.info("Setting Workspace to:" + response.foldername + " STATUS:" + response.status);
+                        this.switchWorkspace(path);
+                    }
                  }
              );
 
