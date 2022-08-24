@@ -74,9 +74,8 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                     fs.writeFileSync(destinationFolder + '/' + element.filename, element.file);
                     console.log("write permissions: " + params[3]);
                     //if(params[3]==="false"){
-                        fs.chmodSync(destinationFolder + '/' + element.filename, "444");
+                        fs.chmodSync(destinationFolder + '/' + element.filename, 0o444);
                     //} 
-
                 });
             });
         }
