@@ -108,6 +108,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         let authenticated = true;
         axios.get<JSON>( itlingoCloudURL + 'token_api/get-client-info/',{headers: {
             'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*',
             'Content-Type': 'application/json',
           }},).then((response: any) => {
             console.log("user auth status: " + response.status);
