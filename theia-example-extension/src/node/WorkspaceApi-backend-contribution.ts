@@ -179,7 +179,11 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             const decipher = crypto.createDecipheriv('aes-256-cbc', key, initialVector.slice(0,16));
             const deciphered = decipher.update(token) + decipher.final();
             let result = JSON.parse(deciphered);
-            return [result['workspace'], result['organization'], result['user'], result['write']?"true":"false"]
+            console.log("WS: " + result['workspace']);
+            console.log("US: " + result['user']);
+            console.log("CM: " + result['organization']);
+            console.log("WR: " + result['write']);
+            return [result['workspace'], result['user'], result['organization'], result['write']?"true":"false"]
         }
 
         app.post('/setWorkspace', (req, res) => {
