@@ -75,7 +75,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         });
     }
      private compareFoldernames(path1: string, path2: string){
-         return path1.substring(path1.length-50) === path2.substring(path2.length - 50);
+         return path1.substring(path1.length-77) === path2.substring(path2.length - 77);
      }
     configure(app: FrontendApplication): void{
         this.setReadOnly(this.readOnly);

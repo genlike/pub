@@ -209,7 +209,9 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log(currentEditors);
             console.log(ip);
             if(!(ip in currentEditors)){
-                createWorkspace(ip, ['workspace']);
+                res.statusCode = 200;
+                res.end();
+                return
             }
             res.statusCode = 200;
             res.setHeader('Content-Type', 'json/application');
