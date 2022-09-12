@@ -5,12 +5,12 @@ import { CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
 import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
-import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
+// import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
 import { MonacoEditor } from "@theia/monaco/lib/browser/monaco-editor";
 // import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
 //import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
-
+import * as monaco from '@theia/monaco-editor-core';
 
 
 import { ILogger } from "@theia/core/lib/common";
@@ -45,7 +45,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     protected readonly shell: ApplicationShell;
     constructor(
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
-        @inject(MonacoEditorService) private readonly monacoEditorService: MonacoEditorService,
+        // @inject(MonacoEditorService) private readonly monacoEditorService: MonacoEditorService,
         @inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
         @inject(MessageService) private readonly messageService: MessageService,
 
@@ -65,27 +65,49 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
          });
     }
 
-    private async setReadOnly(readOnly: boolean){
-        this.monacoWorkspace.onDidOpenTextDocument(() =>
-        {
-            console.log("onDidOpenTextDocument");
-            this.monacoEditorService.getActiveCodeEditor()?.updateOptions({readOnly:readOnly});
-            let editor = this.monacoEditorService.getActiveCodeEditor();
-            console.log("editor - " + editor);
-            if(editor){
-                if (editor instanceof MonacoEditor) {
-                    const codeEditor = editor.getControl();
-                //    const configuration = codeEditor.getRawConfiguration();
-                    codeEditor.updateOptions({ readOnly: true });
-                }
-            }
+    private async setReadOnly(breadOnly: boolean){
+        monaco.editor.onDidCreateEditor((codeEditor) =>{
+            console.log("monaco editor event");
+            console.log(codeEditor);
+            codeEditor.updateOptions({readOnly: true});
         });
+
+         this.monacoWorkspace.onDidOpenTextDocument((edit) =>
+         {
+        //     this.monacoEditorService.listCodeEditors().forEach((editor) => {
+        //         console.log("foreach" + editor);
+        //         editor.updateOptions({readOnly: true});
+        //         editor.focus();
+                
+        //         if(editor instanceof MonacoEditor){
+        //             console.log("is monaco editor");
+        //         } else {
+        //             console.log("is not monaco editor");
+        //         }
+        //     });
+
+        //     // let editor = this.monacoEditorService.getFocusedCodeEditor();//this.monacoEditorService.getActiveCodeEditor();
+        //     // console.log("focused");
+        //     // console.log("editor - " + editor);
+        //     // if(editor){
+        //     //     console.log("Not null2");
+        //     //     console.log( editor);
+        //     //     if (editor instanceof MonacoEditor) {
+        //     //         const codeEditor = editor.getControl();
+        //     //     //    const configuration = codeEditor.getRawConfiguration();
+        //     //         codeEditor.updateOptions({ readOnly: true });
+        //     //     }
+              
+        //     // }
+         });
     }
+
      private compareFoldernames(path1: string, path2: string){
          return path1.substring(path1.length-77) === path2.substring(path2.length - 77);
      }
     configure(app: FrontendApplication): void{
         this.setReadOnly(this.readOnly);
+        
         // this.workspaceService.onWorkspaceChanged((e) => {
         //     e.forEach((v, i , a)=> {
         //         console.log("For each");
