@@ -29,6 +29,7 @@ var currentEditors: {[ip:string]: Editor} = {};
 
 type Editor = {
     foldername:string;
+    write: boolean;
     time:number;
     watcher: Promise<nsfw.NSFW>;
 };
@@ -178,15 +179,12 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             iv = iv.replace(/\-/g, '+').replace(/_/g, '/');
             t = t.replace(/\-/g, '+').replace(/_/g, '/');
             const initialVector = Buffer.from(iv, 'base64');
-            const token = Buffer.from(t, 'base64');
+            const token = Buffer.from(t, 'base64').toString('hex');
             const key = Buffer.from(COM_KEY,'utf8');
-            const decipher = crypto.createDecipheriv('aes-256-cbc', key, initialVector.slice(0,16));
-            const deciphered = decipher.update(token) + decipher.final();
-            let result = JSON.parse(deciphered);
-            // console.log("WS: " + result['workspace']);
-            // console.log("US: " + result['user']);
-            // console.log("CM: " + result['organization']);
-            // console.log("WR: " + result['write']);
+            const decipher = crypto.createDecipheriv('aes-256-cbc', key, initialVector);
+            decipher.setAutoPadding(false);
+            const deciphered = decipher.update(token, 'hex', 'utf-8') + decipher.final('utf-8');
+            let result = JSON.parse(deciphered.substr(0, deciphered.search('}')+1));
             return [result['workspace'], result['user'], result['organization'], result['write']?"true":"false"]
         }
 
@@ -221,7 +219,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             res.setHeader('Content-Type', 'json/application');
             res.json({
                 foldername: currentEditors[ip].foldername,  
-                readonly: false
+                readonly: currentEditors[ip].write
             });
             res.end();
         });
@@ -268,6 +266,7 @@ function createWorkspace(ip:string, params:string[]){
          if (err) throw err;
          currentEditors[ip] = {
             foldername: randomFoldername,
+            write: params[3]=="true",
             time: Date.now(),
             watcher: createWatcher(randomFoldername,params)
          };

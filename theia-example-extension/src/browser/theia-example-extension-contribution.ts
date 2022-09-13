@@ -4,7 +4,7 @@ import { Command, CommandContribution, CommandRegistry, MenuContribution, MenuMo
 import { CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
 import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
-import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
+//import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
 // import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
 import { MonacoEditor } from "@theia/monaco/lib/browser/monaco-editor";
@@ -46,7 +46,7 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     constructor(
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
         // @inject(MonacoEditorService) private readonly monacoEditorService: MonacoEditorService,
-        @inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
+        //@inject(MonacoWorkspace) private readonly monacoWorkspace: MonacoWorkspace,
         @inject(MessageService) private readonly messageService: MessageService,
 
        
@@ -57,7 +57,6 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         @inject(ILogger) protected readonly logger: ILogger
     ) { }
 
-    private readOnly = true;
     protected async switchWorkspace(path: string): Promise<void> {
         this.messageService.info(path);
          this.workspaceService.open(new TheiaURI(path), {
@@ -69,81 +68,17 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         monaco.editor.onDidCreateEditor((codeEditor) =>{
             console.log("monaco editor event");
             console.log(codeEditor);
-            codeEditor.updateOptions({readOnly: true});
+            codeEditor.updateOptions({readOnly: breadOnly});
         });
-
-         this.monacoWorkspace.onDidOpenTextDocument((edit) =>
-         {
-        //     this.monacoEditorService.listCodeEditors().forEach((editor) => {
-        //         console.log("foreach" + editor);
-        //         editor.updateOptions({readOnly: true});
-        //         editor.focus();
-                
-        //         if(editor instanceof MonacoEditor){
-        //             console.log("is monaco editor");
-        //         } else {
-        //             console.log("is not monaco editor");
-        //         }
-        //     });
-
-        //     // let editor = this.monacoEditorService.getFocusedCodeEditor();//this.monacoEditorService.getActiveCodeEditor();
-        //     // console.log("focused");
-        //     // console.log("editor - " + editor);
-        //     // if(editor){
-        //     //     console.log("Not null2");
-        //     //     console.log( editor);
-        //     //     if (editor instanceof MonacoEditor) {
-        //     //         const codeEditor = editor.getControl();
-        //     //     //    const configuration = codeEditor.getRawConfiguration();
-        //     //         codeEditor.updateOptions({ readOnly: true });
-        //     //     }
-              
-        //     // }
-         });
     }
 
      private compareFoldernames(path1: string, path2: string){
          return path1.substring(path1.length-77) === path2.substring(path2.length - 77);
      }
     configure(app: FrontendApplication): void{
-        this.setReadOnly(this.readOnly);
         
-        // this.workspaceService.onWorkspaceChanged((e) => {
-        //     e.forEach((v, i , a)=> {
-        //         console.log("For each");
-        //         console.log(v);
-        //         console.log(i);
-        //         console.log(a);
-        //     });
-        //    // this.messageService.info();
-
-            // this.monacoWorkspace.onDidSaveTextDocument(e =>{
-            //  console.log("Did Save")
-            //  console.log(e.uri);
-            // });
-        //    this.monacoWorkspace.onDidChangeTextDocument(e =>{
-        //     console.log("Did change")
-        //     console.log(e.contentChanges);
-        //    });
-
-           
-           
-        //});
     }
     onStart(app: FrontendApplication):void {
-        // axios.get<JSON>( itlingoCloudURL + 'token_api/get-client-info/',{headers: {
-        //     // 'Access-Control-Allow-Origin': '*',
-        //     // 'Access-Control-Allow-Headers': '*',
-        //     'Content-Type': 'text/plain',
-        //   }},).then((response: any) => {
-        //     console.log("user auth status: " + response.status);
-        //     // if(response.status != 200){
-        //     //     window.location.href = itlingoCloudURL;
-        //     // }
-        // }).catch((error) => {
-        //         window.location.href = itlingoCloudURL;
-        //         throw error;
-        // });
          axios.get<JSON>('/getWorkspace',{},).then(
                  (response: any) => {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
@@ -164,6 +99,8 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                         this.messageService.info("Setting Workspace to:" + response.data.foldername + " STATUS:" + response.status);
                         this.switchWorkspace(path);
                     }
+                    console.log(response.data.readonly);
+                    this.setReadOnly(response.data.readonly);
                  }
              ).catch((error) => {
                 window.location.href = itlingoCloudURL;
