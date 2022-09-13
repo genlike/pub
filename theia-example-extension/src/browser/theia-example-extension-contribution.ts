@@ -56,7 +56,8 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         //@inject(CommandService) private readonly commandService: CommandService,
         @inject(ILogger) protected readonly logger: ILogger
     ) { }
-
+    
+    private readonly:boolean = true;
     protected async switchWorkspace(path: string): Promise<void> {
         this.messageService.info(path);
          this.workspaceService.open(new TheiaURI(path), {
@@ -64,11 +65,11 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
          });
     }
 
-    private async setReadOnly(breadOnly: boolean){
+    private setReadOnly(){
         monaco.editor.onDidCreateEditor((codeEditor) =>{
             console.log("monaco editor event");
-            console.log(codeEditor);
-            codeEditor.updateOptions({readOnly: breadOnly});
+            console.log(this.readonly);
+            codeEditor.updateOptions({readOnly: this.readonly});
         });
     }
 
@@ -99,8 +100,10 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                         this.messageService.info("Setting Workspace to:" + response.data.foldername + " STATUS:" + response.status);
                         this.switchWorkspace(path);
                     }
-                    console.log(response.data.readonly);
-                    this.setReadOnly(response.data.readonly);
+                    console.log("SetREADONLY");
+                    this.readonly = response.data.readonly;
+                    console.log(this.readonly);
+                    this.setReadOnly();
                  }
              ).catch((error) => {
                 window.location.href = itlingoCloudURL;
