@@ -15,7 +15,7 @@
     "@theia/terminal": "latest",
     "@theia/workspace": "latest",
     "theia-example-extension": "0.0.0",
-	 "@theia/plugin-dev": "latest",
+	  "@theia/plugin-dev": "latest",
     "@theia/plugin-ext": "latest",
     "@theia/plugin-ext-vscode": "latest"
   },
