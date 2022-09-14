@@ -9,6 +9,15 @@
     "lib",
     "src"
   ],
+  "contributes": {
+    "keybindings":[
+      {
+        "command": "editor.action.triggerSuggest",
+        "key": "ctrl+shift+space",
+        "mac": "command+shift+space"
+      }
+    ]
+  },
   "dependencies": {
     "@theia/core": "latest",
     "fs": "0.0.1-security",

@@ -19,11 +19,9 @@ let requestIp = require('request-ip');
 // import { WorkspaceNode } from '@theia/navigator/lib/browser/navigator-tree';
 // import URI from '@theia/core/lib/common/uri';
 
-
-var path = "file:///C:/Users/ricar/Documents/Projectos/theia-example-extension/browser-app";
 var hostfs = "/home/theia/workspaces/";
 var COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
-var itlingoCloudURL = "http://localhost:8000/";
+var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
 var currentEditors: {[ip:string]: Editor} = {};
 
 
@@ -188,23 +186,23 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             return [result['workspace'], result['user'], result['organization'], result['write']?"true":"false"]
         }
 
-        app.post('/setWorkspace', (req, res) => {
-            // const widget = this.shell.getWidgetById(FILE_NAVIGATOR_ID) as FileNavigatorWidget | undefined;
-            // if (!widget) {
-            //     return;
-            // }
+        // app.post('/setWorkspace', (req, res) => {
+        //     // const widget = this.shell.getWidgetById(FILE_NAVIGATOR_ID) as FileNavigatorWidget | undefined;
+        //     // if (!widget) {
+        //     //     return;
+        //     // }
             
-            path = req.body.path;
-            path = path.replace("\\", "/");
-            console.log('setWorkspace :' + path);
-            // let uri = Uri.file('/some/path/to/folder');
-            // let success = await commands.executeCommand('vscode.openFolder', uri);
-            // if (WorkspaceNode.is(widget.model.root)) {
-            //     widget.model.selectNode(widget.model.getNodesByUri(new URI(path)).next().value);
-            // }
-             res.send("done!");
-             res.end();
-        });
+        //     path = req.body.path;
+        //     path = path.replace("\\", "/");
+        //     console.log('setWorkspace :' + path);
+        //     // let uri = Uri.file('/some/path/to/folder');
+        //     // let success = await commands.executeCommand('vscode.openFolder', uri);
+        //     // if (WorkspaceNode.is(widget.model.root)) {
+        //     //     widget.model.selectNode(widget.model.getNodesByUri(new URI(path)).next().value);
+        //     // }
+        //      res.send("done!");
+        //      res.end();
+        // });
 
         app.get('/getWorkspace', (req, res) => {
             let ip = requestIp.getClientIp(req);
