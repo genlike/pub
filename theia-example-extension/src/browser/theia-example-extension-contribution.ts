@@ -1,35 +1,21 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
-import { Command, CommandContribution, CommandRegistry, MenuContribution, MenuModelRegistry, MessageService} from '@theia/core/lib/common';
-import { CommonMenus, FrontendApplication } from '@theia/core/lib/browser';
-import { LanguageGrammarDefinitionContribution, TextmateRegistry} from "@theia/monaco/lib/browser/textmate";
+import { Command, MessageService} from '@theia/core/lib/common';
+import {  FrontendApplication } from '@theia/core/lib/browser';
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
-//import { MonacoWorkspace } from '@theia/monaco/lib/browser/monaco-workspace';
-// import { MonacoEditorService } from '@theia/monaco/lib/browser/monaco-editor-service';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
-import { MonacoEditor } from "@theia/monaco/lib/browser/monaco-editor";
-// import { WorkspaceCommandContribution } from "@theia/workspace/lib/browser/workspace-commands";
-//import { WorkspaceCommands } from "@theia/workspace/lib/browser/workspace-commands";
 import * as monaco from '@theia/monaco-editor-core';
 
 
 import { ILogger } from "@theia/core/lib/common";
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
-//import URI from '@theia/core/lib/common/uri';
-import TheiaURI, { URI } from '@theia/core/lib/common/uri';
-import { languages } from '@theia/monaco-editor-core';
+import  TheiaURI from '@theia/core/lib/common/uri';
 
-
-
-//import { FileChangeCollection } from '@theia/filesystem/src/node/file-change-collection';
 import axios from 'axios';
-import { EditorManager, EditorOpenerOptions } from '@theia/editor/lib/browser/editor-manager';
-import { EditorWidget } from '@theia/editor/lib/browser/editor-widget';
 
 
 
 var path = '/home/theia/Workspaces';
-//var remoteHostIp = '192.168.1.120';
 var itlingoCloudURL = "http://localhost:8000/";
 
 export const TheiaExampleExtensionCommand: Command = {
@@ -67,8 +53,6 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
 
     private setReadOnly(){
         monaco.editor.onDidCreateEditor((codeEditor) =>{
-            console.log("monaco editor event");
-            console.log(this.readonly);
             codeEditor.updateOptions({readOnly: this.readonly});
         });
     }
@@ -83,24 +67,19 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
          axios.get<JSON>('/getWorkspace',{},).then(
                  (response: any) => {
                      var prevRoot = this.workspaceService.tryGetRoots()[0] ;
-                     //this.readOnly = response.readonly;
                      
                     if (prevRoot != undefined) {
                         if (!this.compareFoldernames(response.data.foldername.toString(), prevRoot.resource.path.toString())){
                             path = '' + response.data.foldername;
-                            console.log("getWorkspace1")
-                            console.log(path)
                             this.messageService.info("Changing Workspace to:" + response.data.foldername + " PREV:" + prevRoot.resource.path);
                             this.switchWorkspace(path);
                         }
                     } else {
                         path = '' + response.data.foldername;
-                        console.log("getWorkspace2");
-                        console.log(path);
                         this.messageService.info("Setting Workspace to:" + response.data.foldername + " STATUS:" + response.status);
                         this.switchWorkspace(path);
                     }
-                    console.log("SetREADONLY");
+                    //console.log("SetREADONLY");
                     this.readonly = response.data.readonly;
                     console.log(this.readonly);
                     this.setReadOnly();
@@ -119,122 +98,3 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
     }
 }
 
-
-@injectable()
-export class TheiaExampleExtensionCommandContribution implements CommandContribution {
-
-    constructor(
-        @inject(MessageService) private readonly messageService: MessageService,
-    ) { }
-
-    registerCommands(registry: CommandRegistry): void {
-        registry.registerCommand(TheiaExampleExtensionCommand, {
-            execute: () => this.messageService.info('Hello World!')
-        });
-    }
-}
-
-@injectable()
-export class TheiaExampleExtensionMenuContribution implements MenuContribution {
-
-    registerMenus(menus: MenuModelRegistry): void {
-        menus.registerMenuAction(CommonMenus.EDIT_FIND, {
-            commandId: TheiaExampleExtensionCommand.id,
-            label: TheiaExampleExtensionCommand.label
-        });
-    }
-}
-
-
-
-
-
-
-@injectable()
-export class ItLingoGrammarContribution implements LanguageGrammarDefinitionContribution {
-
-    readonly id = 'rsl';
-    readonly scopeName = 'source.rsl';
-
-    registerTextmateLanguage(registry: TextmateRegistry) {
-        languages.register({
-            id: 'rsl',
-            aliases: [
-                'itlang', 'rsl'
-            ],
-            extensions: [
-                '.rsl',
-            ],
-            mimetypes: [
-                'text/rsl'
-            ]
-        });
-        languages.setLanguageConfiguration(this.id, this.configuration);
-
-        const statesGrammar = require('../../data/itlang.tmLanguage.json');
-        registry.registerTextmateGrammarScope('source.rsl', {
-            async getGrammarDefinition() {
-                return {
-                    format: 'json',
-                    content: statesGrammar,
-                };
-            }
-        });
-        registry.mapLanguageIdToTextmateGrammar(this.id, 'source.rsl');
-    }
-
-    protected configuration: languages.LanguageConfiguration = {
-        'comments': {
-            'lineComment': '//',
-            'blockComment': ['/*', '*/']
-        },
-        'brackets': [
-            ['{', '}'],
-            ['[', ']'],
-            ['(', ')']
-        ],
-        'autoClosingPairs': [
-            { 'open': '{', 'close': '}' },
-            { 'open': '[', 'close': ']' },
-            { 'open': '(', 'close': ')' },
-            { 'open': "'", 'close': "'", 'notIn': ['string', 'comment'] },
-            { 'open': '"', 'close': '"', 'notIn': ['string'] },
-            { 'open': '/**', 'close': ' */', 'notIn': ['string'] }
-        ],
-        'surroundingPairs': [
-            { 'open': '{', 'close': '}' },
-            { 'open': '[', 'close': ']' },
-            { 'open': '(', 'close': ')' },
-            { 'open': "'", 'close': "'" },
-            { 'open': '"', 'close': '"' },
-            { 'open': '`', 'close': '`' }
-        ],
-        'folding': {
-            'markers': {
-                'start': new RegExp('^\\s*//\\s*#?region\\b'),
-                'end': new RegExp('^\\s*//\\s*#?endregion\\b')
-            }
-        }
-    };
-
-}
-
-
-
-
-export class YourEditorManager extends EditorManager {
-    async open(uri: URI, options?: EditorOpenerOptions): Promise<EditorWidget> {
-        const widget = await super.open(uri, options);
-        if (true) {
-            const { editor } = widget;
-          //  const configuration = editor.getRawConfiguration();
-            if (editor instanceof MonacoEditor) {
-                const codeEditor = editor.getControl();
-            //    const configuration = codeEditor.getRawConfiguration();
-                codeEditor.updateOptions({ readOnly: true });
-            }
-        }
-        return widget;
-    }
-
-}
