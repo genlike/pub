@@ -186,7 +186,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             decipher.setAutoPadding(false);
             const deciphered = decipher.update(token, 'hex', 'utf-8') + decipher.final('utf-8');
             let result = JSON.parse(deciphered.substr(0, deciphered.search('}')+1));
-            return [result['workspace'], result['user'], result['organization'], result['write']?"true":"false"]
+            return [result['workspace'], result['user'], result['organization'], result['write']?"false":"true"]
         }
 
         // app.post('/setWorkspace', (req, res) => {
