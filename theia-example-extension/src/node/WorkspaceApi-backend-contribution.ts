@@ -19,7 +19,7 @@ let requestIp = require('request-ip');
 // import { WorkspaceNode } from '@theia/navigator/lib/browser/navigator-tree';
 // import URI from '@theia/core/lib/common/uri';
 
-var hostfs = "/home/theia/workspaces/";
+var hostfs = "/tmp/theia/workspaces/";
 var COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
 var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
 var currentEditors: {[ip:string]: Editor} = {};
