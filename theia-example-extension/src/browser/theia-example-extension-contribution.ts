@@ -88,10 +88,10 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                 window.location.href = itlingoCloudURL;
              });
 
-         setInterval(() =>
-         {
-             axios.get<String>('/ping',{},);
-        }, 60*1000);
+        //  setInterval(() =>
+        //  {
+        //      axios.get<String>('/ping',{},);
+        // }, 60*1000);
 
 
         this.messageService.info("Welcome to ITLingo online IDE!");
