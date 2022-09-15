@@ -20,6 +20,7 @@ let requestIp = require('request-ip');
 // import URI from '@theia/core/lib/common/uri';
 
 var hostfs = "/tmp/theia/workspaces/";
+const staticFolderLength = 76;
 var COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
 var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
 var currentEditors: {[ip:string]: Editor} = {};
@@ -85,7 +86,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log(event.directory);
             console.log(event.file);
             const fullfilepath = event.directory + '/' + event.file;
-            const removeNameLength = 77 + params[0].length + 1;
+            const removeNameLength = staticFolderLength + params[0].length + 1;
             const onlyFile = fullfilepath.substring(removeNameLength);
             console.log("woot: " + onlyFile + " " + fullfilepath);
             const client = await pgPool.connect();
@@ -125,7 +126,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             const client = await pgPool.connect();
             try {
                 const fullfilepath = event.directory + '/' + event.file;
-                const removeNameLength = 77 + params[0].length + 1;
+                const removeNameLength = staticFolderLength + params[0].length + 1;
                 const onlyFile = fullfilepath.substring(removeNameLength);
                 console.log("woot: " + onlyFile + " " + fullfilepath);
                 var rawData = fs.readFileSync(fullfilepath);
@@ -150,7 +151,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             console.log(event.directory);
             console.log(event.file);
             const fullfilepath = event.directory + '/' + event.file;
-            const removeNameLength = 77 + params[0].length + 1;
+            const removeNameLength = staticFolderLength + params[0].length + 1;
             const onlyFile = fullfilepath.substring(removeNameLength);
             console.log("woot: " + onlyFile + " " + fullfilepath);
             const deleteQuery = "DELETE FROM t_files WHERE filename = $1 AND workspace = $2;"
@@ -167,7 +168,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
             const fullfilepath = event.directory + '/' + event.oldFile;
             const newfullfilepath = event.newDirectory + '/' + event.newFile;
-            const removeNameLength = 77 + params[0].length + 1;
+            const removeNameLength = staticFolderLength + params[0].length + 1;
             const oldFile = fullfilepath.substring(removeNameLength);
             const newFile = newfullfilepath.substring(removeNameLength);
 
