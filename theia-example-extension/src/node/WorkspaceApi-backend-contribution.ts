@@ -306,31 +306,31 @@ function createWorkspace(ip:string, params:string[]){
     }
 
     
-    setInterval(() => {
-        for (const [key, value] of Object.entries(currentEditors)) {
-            console.log(key + value + 'Time Diff' + (Date.now() - value.time));
-            //If last update was 5 min ago
-            //let val:[any, any, any] = value
-            if(Date.now() - value.time>5*1000*60){
-                console.log("unwatch this" + value.foldername.substr(66));
-                //value.watcher.unwatch(value.foldername.substr(66));
-                value.watcher.then((val) => {val.stop().then(() => {
-                    delete currentEditors[key];
-                    fs.readdir(value.foldername.substr(66), (error:any, files:string[])=> {
-                        if(error){
-                            console.log(error);
-                        } else {
-                            files.forEach(file => {
-                                console.log(file);
-                            });
-                        }
-                    });
-                    fs.rmdir(value.foldername.substr(66)+'/..',{recursive: true}, (error:any) => {console.log(error)});
-                });
-            });
-        }
-      }
-}, 60000);
+//     setInterval(() => {
+//         for (const [key, value] of Object.entries(currentEditors)) {
+//             console.log(key + value + 'Time Diff' + (Date.now() - value.time));
+//             //If last update was 5 min ago
+//             //let val:[any, any, any] = value
+//             if(Date.now() - value.time>5*1000*60){
+//                 console.log("unwatch this" + value.foldername.substr(66));
+//                 //value.watcher.unwatch(value.foldername.substr(66));
+//                 value.watcher.then((val) => {val.stop().then(() => {
+//                     delete currentEditors[key];
+//                     fs.readdir(value.foldername.substr(66), (error:any, files:string[])=> {
+//                         if(error){
+//                             console.log(error);
+//                         } else {
+//                             files.forEach(file => {
+//                                 console.log(file);
+//                             });
+//                         }
+//                     });
+//                     fs.rmdir(value.foldername.substr(66)+'/..',{recursive: true}, (error:any) => {console.log(error)});
+//                 });
+//             });
+//         }
+//       }
+// }, 60000);
 
      
 
