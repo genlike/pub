@@ -73,7 +73,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                     fs.writeFileSync(destinationFolder + '/' + element.filename, element.file);
                     console.log("write permissions: " + params[3]);
                     //if(params[3]==="false"){
-                        fs.chmodSync(destinationFolder + '/' + element.filename, 0o444);
+                    //fs.chmodSync(destinationFolder + '/' + element.filename, 0o444);
                     //} 
                 });
             });
@@ -87,7 +87,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             const fullfilepath = event.directory + '/' + event.file;
             const removeNameLength = 77 + params[0].length + 1;
             const onlyFile = fullfilepath.substring(removeNameLength);
-
+            console.log("woot: " + onlyFile + " " + fullfilepath);
             const client = await pgPool.connect();
             await client.query("SELECT filename, workspace FROM t_files WHERE filename=$1 AND workspace=$2", [onlyFile,params[0]], (err:any, res:any) =>
             {
@@ -127,6 +127,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 const fullfilepath = event.directory + '/' + event.file;
                 const removeNameLength = 77 + params[0].length + 1;
                 const onlyFile = fullfilepath.substring(removeNameLength);
+                console.log("woot: " + onlyFile + " " + fullfilepath);
                 var rawData = fs.readFileSync(fullfilepath);
 
                 await client.query("BEGIN");
@@ -151,6 +152,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             const fullfilepath = event.directory + '/' + event.file;
             const removeNameLength = 77 + params[0].length + 1;
             const onlyFile = fullfilepath.substring(removeNameLength);
+            console.log("woot: " + onlyFile + " " + fullfilepath);
             const deleteQuery = "DELETE FROM t_files WHERE filename = $1 AND workspace = $2;"
             pgPool.query(deleteQuery,[onlyFile, params[0]]);
         }
