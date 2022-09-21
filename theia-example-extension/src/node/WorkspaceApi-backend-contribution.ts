@@ -20,6 +20,7 @@ let requestIp = require('request-ip');
 // import URI from '@theia/core/lib/common/uri';
 
 var hostfs = "/tmp/theia/workspaces/";
+var hostroot = "/home/theia/pub/";
 const staticFolderLength = 76;
 var COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
 var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
@@ -54,10 +55,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         const pgPool = new Pool({
             connectionString,
-             ssl: {
-                 rejectUnauthorized: false
-            }
-            // ssl: false
+            //  ssl: {
+            //      rejectUnauthorized: false
+            // }
+            ssl: false
         });
         
         function pullFilesFromDb(destinationFolder: string, params: string[]) {
@@ -258,6 +259,51 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             res.end();
         });
 
+
+
+        app.get('/setupRSL', (req, res) => {
+            let ip = requestIp.getClientIp(req);
+            if(currentEditors[ip]) {
+                copyRSLFolder(currentEditors[ip].foldername)
+            }
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/plain');
+            res.end();
+        });
+
+
+        app.get('/setupASL', (req, res) => {
+            let ip = requestIp.getClientIp(req);
+            if(currentEditors[ip]) {
+                copyASLFolder(currentEditors[ip].foldername)
+            }
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/plain');
+            res.end();
+        });
+
+
+
+        function copyASLFolder(path:string){
+            copyFolder('ASL', path);
+        }
+        function copyRSLFolder(path:string){
+            copyFolder('RSL', path);
+        }
+
+        function copyFolder(arg: string, path:string){
+            switch (arg) {
+                case 'ASL':
+                    fs.cpSync(hostroot + 'templates/ASL/', path, { recursive: true });
+                    break;
+                case 'RSL':
+                    fs.cpSync(hostroot + 'templates/RSL/', path, { recursive: true });
+                    break;
+            
+                default:
+                    break;
+            }
+        }
 
 function createWorkspace(ip:string, params:string[]){
     var randomFoldername = hostfs + 'tmp/WS-' + uuid.v4() + '/Workspace-'+ params[0];

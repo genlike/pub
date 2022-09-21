@@ -12,6 +12,7 @@
     "@theia/navigator": "latest",
     "@theia/preferences": "latest",
     "@theia/process": "latest",
+    "@theia/keymaps": "latest",
     "@theia/terminal": "latest",
     "@theia/workspace": "latest",
     "theia-example-extension": "0.0.0",

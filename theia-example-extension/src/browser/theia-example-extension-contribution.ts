@@ -1,9 +1,11 @@
 
 import { injectable, inject } from '@theia/core/shared/inversify';
 import { Command, MessageService} from '@theia/core/lib/common';
-import {  FrontendApplication } from '@theia/core/lib/browser';
+import {  FrontendApplication, AbstractViewContribution } from '@theia/core/lib/browser';
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service";
+import { GettingStartedWidget } from './theia-example-extension-widget';
+import { FrontendApplicationStateService } from '@theia/core/lib/browser/frontend-application-state';
 import * as monaco from '@theia/monaco-editor-core';
 
 
@@ -25,10 +27,13 @@ export const TheiaExampleExtensionCommand: Command = {
 
 
 @injectable()
-export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
+export class TheiaSendBdFileUpdates extends AbstractViewContribution<GettingStartedWidget>  implements FrontendApplicationContribution {
 
     @inject(ApplicationShell)
     protected readonly shell: ApplicationShell;
+    @inject(FrontendApplicationStateService)
+    protected readonly stateService: FrontendApplicationStateService;
+
     constructor(
         @inject(WorkspaceService) private readonly workspaceService: WorkspaceService,
         // @inject(MonacoEditorService) private readonly monacoEditorService: MonacoEditorService,
@@ -41,7 +46,15 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
         // @inject(CommandService) private readonly commandService: CommandService,
         //@inject(CommandService) private readonly commandService: CommandService,
         @inject(ILogger) protected readonly logger: ILogger
-    ) { }
+    ) { 
+        super({
+            widgetId: GettingStartedWidget.ID,
+            widgetName: GettingStartedWidget.LABEL,
+            defaultWidgetOptions: {
+                area: 'main',
+            }
+        });
+    }
     
     private readonly:boolean = true;
     protected async switchWorkspace(path: string): Promise<void> {
@@ -79,6 +92,9 @@ export class TheiaSendBdFileUpdates implements FrontendApplicationContribution {
                         this.messageService.info("Setting Workspace to:" + response.data.foldername + " STATUS:" + response.status);
                         this.switchWorkspace(path);
                     }
+                    this.stateService.reachedState('ready').then(
+                        () => this.openView({ reveal: true })
+                    );
                     //console.log("SetREADONLY");
                     this.readonly = response.data.readonly;
                     console.log(this.readonly);
