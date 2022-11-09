@@ -7,8 +7,7 @@ import { WorkspaceService } from "@theia/workspace/lib/browser/workspace-service
 import { GettingStartedWidget } from './theia-example-extension-widget';
 import { FrontendApplicationStateService } from '@theia/core/lib/browser/frontend-application-state';
 import * as monaco from '@theia/monaco-editor-core';
-
-
+import { Widget } from '@theia/core/lib/browser/widgets';
 import { ILogger } from "@theia/core/lib/common";
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
 import  TheiaURI from '@theia/core/lib/common/uri';
@@ -55,8 +54,9 @@ export class TheiaSendBdFileUpdates extends AbstractViewContribution<GettingStar
             }
         });
     }
-    
+
     private readonly:boolean = true;
+
     protected async switchWorkspace(path: string): Promise<void> {
         this.messageService.info(path);
          this.workspaceService.open(new TheiaURI(path), {
@@ -68,6 +68,26 @@ export class TheiaSendBdFileUpdates extends AbstractViewContribution<GettingStar
         monaco.editor.onDidCreateEditor((codeEditor) =>{
             codeEditor.updateOptions({readOnly: this.readonly});
         });
+        if(this.readonly){
+            this.shell.widgets.forEach((widget: Widget) => {
+                console.log("WIDGETID: " + widget.id);
+                if (['terminal','process'].includes(widget.id) || widget.id.startsWith('debug') || widget.id.startsWith('scm')) {
+                    widget.dispose();
+                }
+            });
+
+            var xMenuItems = document.getElementsByClassName("p-MenuBar-item") as HTMLCollectionOf<HTMLElement>;
+            const menuIndexs = [1,2,3,4,5,6,7];
+            for(const index of menuIndexs){
+                var xTermMenu = xMenuItems[index];
+                if(xTermMenu !== undefined ){
+                    xTermMenu.style.width = '1px';
+                    xTermMenu.style.padding = '0px';
+                    
+                }
+            }
+            document.title = "[Viewer] " + document.title;
+        }
     }
 
      private compareFoldernames(path1: string, path2: string){
