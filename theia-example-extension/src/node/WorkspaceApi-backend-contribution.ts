@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import * as express from 'express';
 import { BackendApplicationContribution } from '@theia/core/lib/node';
-
+import axios from 'axios';
 //const pg = require('pg');
 import * as fs from 'fs';
 import * as nsfw from 'nsfw'
@@ -23,7 +23,8 @@ var hostfs = "/tmp/theia/workspaces/";
 var hostroot = "/home/theia/pub/";
 const staticFolderLength = 76;
 var COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
-var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
+//var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
+var itlingoCloudURL = "http://172.26.128.1:8000/";
 var currentEditors: {[ip:string]: Editor} = {};
 
 
@@ -31,6 +32,7 @@ type Editor = {
     foldername:string;
     write: boolean;
     time:number;
+    workspaceid: number;
     watcher: Promise<nsfw.NSFW>;
 };
 
@@ -187,7 +189,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             decipher.setAutoPadding(false);
             const deciphered = decipher.update(token, 'hex', 'utf-8') + decipher.final('utf-8');
             let result = JSON.parse(deciphered.substr(0, deciphered.search('}')+1));
-            return [result['workspace'], result['user'], result['organization'], result['write']?"true":"false"]
+            return [result['workspace'], result['user'], result['organization'],result['write']?"true":"false",result['wsid']]
         }
 
         // app.post('/setWorkspace', (req, res) => {
@@ -271,7 +273,6 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             res.end();
         });
 
-
         app.get('/setupASL', (req, res) => {
             let ip = requestIp.getClientIp(req);
             if(currentEditors[ip]) {
@@ -283,6 +284,52 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         });
 
 
+        app.get('/setupCustom',async (req, res) => {
+            let ip = requestIp.getClientIp(req);
+            let responseItlingoCloud;
+            if(currentEditors[ip]) {
+                responseItlingoCloud = await setupCustomFiles(currentEditors[ip]);
+            }
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'json/application');
+            res.json(responseItlingoCloud?.data);
+            res.end();
+        });
+
+        app.get('/setupCustomAccepted',async (req, res) => {
+            let ip = requestIp.getClientIp(req);
+            console.log('setupCustomAccepted');
+            console.log(req.query.fileid);
+            if(currentEditors[ip]) {
+                 downloadItlingoFiles(currentEditors[ip], req.query.filename as string, req.query.fileid as string);
+            }
+            
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/plain');
+            res.end();
+        });
+
+
+
+        async function setupCustomFiles(editor:Editor){
+            let requestURL = itlingoCloudURL + 'token_api/get-file-list/' + editor.workspaceid;
+            console.log("CustomRequestURL:" + requestURL);
+            return await axios.get<JSON>(requestURL);
+        }
+
+        async function downloadItlingoFiles(editor:Editor, filename:string,fileId:string){
+            let vUrl =  itlingoCloudURL + 'token_api/download-file/' + editor.workspaceid + '/' + fileId;
+            console.log(vUrl);
+            axios({
+                url: vUrl,
+                method: 'GET',
+                responseType: 'blob', // important
+            }).then((response) => {
+                let filenameToWrite = editor.foldername + '/' + filename;
+                console.log(filenameToWrite)
+                fs.writeFileSync(filenameToWrite, response.data);
+            });
+        }
 
         function copyASLFolder(path:string){
             copyFolder('ASL', path);
@@ -315,6 +362,7 @@ function createWorkspace(ip:string, params:string[]){
             foldername: randomFoldername,
             write: params[3]=="true",
             time: Date.now(),
+            workspaceid: Number.parseInt(params[4]),
             watcher: createWatcher(randomFoldername,params)
          };
      });
@@ -323,7 +371,6 @@ function createWorkspace(ip:string, params:string[]){
 
 
     async function  createWatcher(path:string, params:string[]){
-
         let watcher: nsfw.NSFW | undefined = await nsfw(fs.realpathSync(path), (events: nsfw.FileChangeEvent[]) => {
             for (const event of events) {
                 if (event.action === nsfw.actions.CREATED) {
@@ -386,6 +433,8 @@ function createWorkspace(ip:string, params:string[]){
 
     }
 }
+
+
 
 
 

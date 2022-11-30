@@ -18,7 +18,7 @@ import * as React from '@theia/core/shared/react';
 import URI from '@theia/core/lib/common/uri';
 import { injectable, inject, postConstruct } from '@theia/core/shared/inversify';
 import { ReactWidget } from '@theia/core/lib/browser/widgets/react-widget';
-import { MessageService,CommandRegistry, isOSX, environment, Path } from '@theia/core/lib/common';
+import { QuickPickItem,QuickInputService, MessageService,CommandRegistry, isOSX, environment, Path } from '@theia/core/lib/common';
 import { WorkspaceCommands, WorkspaceService } from '@theia/workspace/lib/browser';
 import { KeymapsCommands } from '@theia/keymaps/lib/browser';
 import { CommonCommands, LabelProvider, Key, KeyCode, codicon } from '@theia/core/lib/browser';
@@ -100,6 +100,10 @@ export class GettingStartedWidget extends ReactWidget {
     @inject(MessageService) 
     private readonly messageService: MessageService;
 
+    @inject(QuickInputService) 
+    private readonly quickInputService: QuickInputService;
+    
+
     @postConstruct()
     protected async init(): Promise<void> {
         this.id = GettingStartedWidget.ID;
@@ -179,15 +183,25 @@ export class GettingStartedWidget extends ReactWidget {
                     {'Setup RSL project'}
                     </a>
                 </div>
-                <div className='gs-header'>
-                    <div className='gs-action-container'>
-                        <a
-                        role={'button'}
-                        tabIndex={0}
-                        onClick={(e: React.MouseEvent) => this.doSetupASL()}>
-                        {'Setup ASL project'}
-                        </a>
-                    </div>
+            </div>
+            <div className='gs-header'>
+                <div className='gs-action-container'>
+                    <a
+                    role={'button'}
+                    tabIndex={0}
+                    onClick={(e: React.MouseEvent) => this.doSetupASL()}>
+                    {'Setup ASL project'}
+                    </a>
+                </div>
+            </div>
+            <div className='gs-header'>
+                <div className='gs-action-container'>
+                    <a
+                    role={'button'}
+                    tabIndex={0}
+                    onClick={(e: React.MouseEvent) => this.doCustomSetup()}>
+                    {'Setup with itlingo cloud documents'}
+                    </a>
                 </div>
             </div>
         </div>;
@@ -487,6 +501,7 @@ export class GettingStartedWidget extends ReactWidget {
 
     protected doSetupRSL = () => {
         axios.get<JSON>('/setupRSL',{},).then(() => { 
+            
             this.messageService.info("Finished setting up RSL files!");
      });
         
@@ -496,6 +511,35 @@ export class GettingStartedWidget extends ReactWidget {
         axios.get<JSON>('/setupASL',{},).then(() => { 
             this.messageService.info("Finished setting up ASL files!");
         });
+    }
+    
+    protected doCustomSetup = () => {
+        axios.get<JSON>('/setupCustom',{},).then((listOfFiles:any) => {
+            let selection:QuickPickItem[] = []
+            console.log("CustomSetupTheia");
+            console.log(listOfFiles);
+           
+            for(const ele of listOfFiles.data.namelist){
+                console.log(ele);
+                let newQuickPickItem: QuickPickItem = { 
+                    label: "File: " + ele.name + " Type: " + ele.type,
+                    id: ele.id,
+                    detail: ele.name
+                }
+                selection.push(newQuickPickItem);
+            }
+            
+            this.quickInputService.showQuickPick(selection, { 
+                hideCheckAll: false,
+                canSelectMany: true
+            }).then((value) => {
+                axios.get<JSON>('/setupCustomAccepted?fileid='+value?.id +'&filename=' + value?.detail,{ data: value?.id},).then(() => {
+                    this.messageService.info("Finished setting up itlingo cloud files!");
+                });
+            });
+            
+     });
+        
     }
 
 }

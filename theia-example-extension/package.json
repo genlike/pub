@@ -27,6 +27,38 @@
     "watch": "tsc -w",
     "update-vscode": "node ./node_modules/vscode/bin/install"
   },
+  "contributes": {
+    "commands": [
+      {
+          "command": "extended.git.clone",
+          "title": "Clone Git Repo",
+          "category": "Extended Git"
+      },
+      {
+        "command": "extended.git.pull",
+        "title": "Pull Git Repo",
+        "category": "Extended Git"
+    },{
+      "command": "extended.git.push",
+      "title": "Push Git Repo",
+      "category": "Extended Git"
+  }],
+      "menus": {
+        "scm/title": [{
+          "command": "extended.git.clone",
+          "group": "navigation"
+        },
+        {
+          "command": "extended.git.pull",
+          "group": "navigation"
+        },
+        {
+          "command": "extended.git.pull",
+          "group": "navigation"
+        }]
+      }
+
+  },
   "theiaExtensions": [
     {
       "frontend": "lib/browser/theia-example-extension-frontend-module",
