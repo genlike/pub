@@ -88,3 +88,17 @@ html, body {
     text-transform: capitalize;
     font-weight: 400;
 }
+
+.extension-readOnly {
+    opacity: var(--theia-mod-disabled-opacity);
+    pointer-events: none;
+    cursor: default;
+}
+
+.no-right-click {
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    -o-user-select: none;
+    user-select: none;
+}

@@ -68,26 +68,95 @@ export class TheiaSendBdFileUpdates extends AbstractViewContribution<GettingStar
         monaco.editor.onDidCreateEditor((codeEditor) =>{
             codeEditor.updateOptions({readOnly: this.readonly});
         });
+        
         if(this.readonly){
             this.shell.widgets.forEach((widget: Widget) => {
-                console.log("WIDGETID: " + widget.id);
                 if (['terminal','process'].includes(widget.id) || widget.id.startsWith('debug') || widget.id.startsWith('scm')) {
                     widget.dispose();
                 }
             });
+            //this.quickView.showItem()
+            
+                var xMenuItems = document.getElementById("theia-top-panel") as HTMLElement;
+                xMenuItems.classList.add("extension-readOnly");
+                //var filesPanel = document.getElementById("files");
+                //filesPanel.setAttribute("oncontextmenu", "return false;");
+                //filesPanel.classList.add("no-right-click");
+                // const menuIndexs = [0,1,2,3,4,5,6,7];
+                // for(const index of menuIndexs){
+                //     var xTermMenu = xMenuItems[index];
+                //     var new_element = xTermMenu.cloneNode(true);
 
-            var xMenuItems = document.getElementsByClassName("p-MenuBar-item") as HTMLCollectionOf<HTMLElement>;
-            const menuIndexs = [1,2,3,4,5,6,7];
-            for(const index of menuIndexs){
-                var xTermMenu = xMenuItems[index];
-                if(xTermMenu !== undefined ){
-                    xTermMenu.style.width = '1px';
-                    xTermMenu.style.padding = '0px';
-                    
-                }
-            }
-            document.title = "[Viewer] " + document.title;
+                //     if(xTermMenu !== undefined ){
+                //         xTermMenu
+                //         xTermMenu.parentNode?.replaceChild(new_element,xTermMenu);
+                //     }
+                // }
+
+
+
+                
+            
+            //  document.addEventListener('mousedown', (event) =>{
+            //      setTimeout( () => {
+            //         var collection:HTMLCollectionOf<HTMLElement> = document.getElementsByClassName("p-Menu-item") as HTMLCollectionOf<HTMLElement>;
+            //         for(let i = 0; i<collection.length; i++){
+            //             var element:HTMLElement = collection[i];
+            //             if(element !== undefined ){
+            //                 element.classList.add("extension-readOnly")
+            //             }
+            //             console.log("menu item");
+            //             console.log(element.innerHTML);
+            //             console.log(element.style);
+            //         }
+            //      });
+            //  });
+            var styleElement = document.createElement('style');
+
+            // // // Append style element to head
+            // document.head.appendChild(element);
+
+            // // Reference to the stylesheet
+            
+            var styles = '.p-Widget.p-Menu { ';
+            styles += 'pointer-events: none; ';
+            styles += 'cursor: default; ';
+            styles += ' }\n';
+            styles += '.p-Menu-item { ';
+            styles += 'opacity: var(--theia-mod-disabled-opacity); ';
+            styles += 'pointer-events: none; ';
+            styles += 'cursor: default;';
+            styles += ' }\n';
+            styles += '.p-Menu-item[data-command="file.download"] { ';
+            styles += 'opacity: 1;';
+            styles += 'pointer-events: all; ';
+            styles += 'cursor: pointer; ';
+            styles += ' }\n';
+            styles += '.p-Menu-item[data-command="core.copy"] { ';
+            styles += 'opacity: 1;';
+            styles += 'pointer-events: all; ';
+            styles += 'cursor: pointer; ';
+            styles += ' }\n';
+            // // Add the first CSS rule to the stylesheet
+            styleElement.innerHTML = styles;
+            document.body.appendChild(styleElement);
+            // var styles = '.p-Menu-item[data-command="core.cut"] {';
+            // styles += '.p-mod-active';
+            // styles += '}\n';
+            // sheet?.insertRule(styles, 0);
+
+
         }
+    }
+    checkReadOnlyElement(element: Element) {
+        let notReadOnly = ["core.cut","core.paste","core.copy"]
+        
+        if(element.attributes.getNamedItem("data-command")?.value != undefined ){
+            if(notReadOnly.includes(element.attributes.getNamedItem("data-command")?.value as string)){
+                return false;
+            }
+        }
+        return true;
     }
 
      private compareFoldernames(path1: string, path2: string){
