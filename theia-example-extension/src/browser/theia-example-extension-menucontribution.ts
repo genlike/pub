@@ -1,8 +1,13 @@
 import { injectable, inject } from '@theia/core/shared/inversify';
-import { CommandContribution, CommandRegistry, MenuContribution, MenuModelRegistry } from '@theia/core/lib/common';
-import { KeybindingContribution, KeybindingRegistry, QuickInputService } from '@theia/core/lib/browser';
-// import { WorkspaceCommands } from '@theia/workspace/lib/browser';
+import { CommandContribution,MessageService, CommandHandler, CommandRegistry, MenuContribution, MenuModelRegistry } from '@theia/core/lib/common';
+import { KeybindingContribution, KeybindingRegistry, QuickInputService, } from '@theia/core/lib/browser';
+import { GIT_COMMANDS, GIT_MENUS } from '@theia/git/lib/browser/git-contribution';
 
+import {
+    TabBarToolbarContribution,
+    TabBarToolbarItem,
+    TabBarToolbarRegistry
+} from '@theia/core/lib/browser/shell/tab-bar-toolbar';
 // import {  CommonCommands } from '@theia/core/lib/browser';
 
 //import axios from 'axios';
@@ -10,9 +15,41 @@ import { KeybindingContribution, KeybindingRegistry, QuickInputService } from '@
 //var g_readOnly:boolean | undefined = undefined;
 
 @injectable()
-export class TheiaExampleMenuContribution implements MenuContribution {
+export class TheiaExampleMenuContribution implements MenuContribution, TabBarToolbarContribution {
+
+
+    constructor(
+        @inject(CommandRegistry) protected readonly  commands: CommandRegistry
+    ){
+    }
+
+
+    protected asSubMenuItemOf(submenu: { group: string; label: string; menuGroups: string[]; }, groupIdx: number = 0): string {
+        return submenu.group + '/' + submenu.label + '/' + submenu.menuGroups[groupIdx];
+    }
+
+    registerToolbarItems(registry: TabBarToolbarRegistry): void {
+        const registerItem = (item: TabBarToolbarItem) => {
+            const commandId = item.command;
+            const id = '__git.tabbar.toolbar.' + commandId;
+            const command = this.commands.getCommand(commandId);
+            this.commands.registerCommand({ id, iconClass: command && command.iconClass }, {
+                execute: ( ...args) =>  this.commands.executeCommand(commandId, ...args),
+                isEnabled: ( ...args) => this.commands.isEnabled(commandId, ...args),
+            });
+            item.command = id;
+            registry.registerItem(item);
+        };
+
+        registerItem({
+            id: GIT_COMMANDS.CLONE.id,
+            command: GIT_COMMANDS.CLONE.id,
+            tooltip: GIT_COMMANDS.CLONE.label,
+            group: this.asSubMenuItemOf(GIT_MENUS.SUBMENU_PULL_PUSH, 0)
+        })
+
+    }
     async registerMenus(menus: MenuModelRegistry): Promise<void> {
-        
     }
 }
 
@@ -23,6 +60,14 @@ export class TheiaExampleCommandContribution implements  CommandContribution {
 
     @inject(QuickInputService)
     protected readonly quickInputService: QuickInputService;
+    
+
+    constructor(
+        @inject(MessageService) protected readonly  messageService: MessageService,
+        @inject(CommandRegistry) protected readonly  commands: CommandRegistry
+    ){
+    }
+
 
    async registerCommands(commands: CommandRegistry): Promise<void> {
         
@@ -46,7 +91,42 @@ export class TheiaExampleCommandContribution implements  CommandContribution {
         //         commands.registerCommand(CommonCommands.PASTE);
         //         commands.registerCommand(CommonCommands.COPY);
         //     }
+        commands.unregisterCommand(GIT_COMMANDS.PULL);
+        commands.unregisterCommand(GIT_COMMANDS.PULL_DEFAULT);
+        commands.unregisterCommand(GIT_COMMANDS.PULL_DEFAULT_FAVORITE);
+        commands.unregisterCommand(GIT_COMMANDS.PUSH);
+        commands.unregisterCommand(GIT_COMMANDS.PUSH_DEFAULT);
+        commands.unregisterCommand(GIT_COMMANDS.PUSH_DEFAULT_FAVORITE);
+        commands.unregisterCommand(GIT_COMMANDS.CLONE);
+        commands.unregisterCommand(GIT_COMMANDS.FETCH);
+
+        GIT_MENUS.SUBMENU_PULL_PUSH.label = "Pull, Push, Clone";
+        commands.registerCommand(GIT_COMMANDS.PULL, {
+            execute: () => { this.myGitPull(); } 
+        } as CommandHandler);
+        commands.registerCommand(GIT_COMMANDS.PUSH, {
+            execute:  () => { this.myGitPush(); } 
+        } as CommandHandler);
+
+        GIT_COMMANDS.FETCH.label = "Clone...";
+        commands.registerCommand(GIT_COMMANDS.FETCH, {
+            execute: () => { this.myGitClone(); } 
+        } as CommandHandler);
     }
+
+    myGitPull(){
+        this.messageService.log("yo");
+        console.log("yo pull");
+    }
+    myGitPush(){
+        this.messageService.log("yo");
+        console.log("yo push");
+    }
+    myGitClone(){
+        this.messageService.log("yo");
+        console.log("yo clone");
+    }
+
 }
 
 
@@ -76,3 +156,5 @@ export class TheiaExampleKeybindingContribution implements KeybindingContributio
 //     }
 //     return g_readOnly;
 // }
+
+

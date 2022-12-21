@@ -4,11 +4,11 @@
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { TheiaSendBdFileUpdates } from './theia-example-extension-contribution';
 import { GettingStartedWidget } from './theia-example-extension-widget';
-//import {  TheiaExampleCommandContribution, TheiaExampleKeybindingContribution } from './theia-example-extension-menucontribution';
+import {  TheiaExampleCommandContribution } from './theia-example-extension-menucontribution';
 import { WidgetFactory, FrontendApplicationContribution, bindViewContribution  } from '@theia/core/lib/browser';
 //import { KeybindingContribution } from '@theia/core/lib/browser';
 
-//import { CommandContribution } from '@theia/core/lib/common';
+import { CommandContribution } from '@theia/core/lib/common';
 
 import '../../src/browser/style/index.css';
 
@@ -18,7 +18,7 @@ export default new ContainerModule(bind => {
     bind(FrontendApplicationContribution).to(TheiaSendBdFileUpdates);
     bindViewContribution(bind, TheiaSendBdFileUpdates);
     bind(FrontendApplicationContribution).toService(TheiaSendBdFileUpdates);
-    //bind(CommandContribution).to(TheiaExampleCommandContribution);
+    bind(CommandContribution).to(TheiaExampleCommandContribution);
 
     //bind(KeybindingContribution).to(TheiaExampleKeybindingContribution);
     bind(GettingStartedWidget).toSelf();

@@ -7,9 +7,12 @@
   "files": [
     "data",
     "lib",
-    "src"
+    "src",
+	 "webview"
   ],
   "dependencies": {
+    "sprotty": "^0.12.0",
+    "sprotty-protocol": "^0.12.0",
     "fs": "0.0.1-security",
     "log-timestamp": "^0.3.0",
     "pg": "^8.7.3",
@@ -43,22 +46,34 @@
       "title": "Push Git Repo",
       "category": "Extended Git"
   }],
-      "menus": {
-        "scm/title": [{
+  "menus": {
+    "scm/title": [
+        {
           "command": "extended.git.clone",
-          "group": "navigation"
+          "group": "0_header@1",
+          "when": "scmProvider == git"
         },
         {
           "command": "extended.git.pull",
-          "group": "navigation"
+          "group": "0_header@2",
+          "when": "scmProvider == git"
         },
         {
           "command": "extended.git.pull",
-          "group": "navigation"
+          "group": "0_header@3",
+          "when": "scmProvider == git"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "extended.git.pull",
+          "when": "editorHasSelection"
         }]
-      }
+    }
 
   },
+  "main": "lib/index",
+  "types": "lib/index",
   "theiaExtensions": [
     {
       "frontend": "lib/browser/theia-example-extension-frontend-module",

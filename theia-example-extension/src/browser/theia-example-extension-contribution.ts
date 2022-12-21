@@ -77,47 +77,11 @@ export class TheiaSendBdFileUpdates extends AbstractViewContribution<GettingStar
             });
             //this.quickView.showItem()
             
-                var xMenuItems = document.getElementById("theia-top-panel") as HTMLElement;
-                xMenuItems.classList.add("extension-readOnly");
-                //var filesPanel = document.getElementById("files");
-                //filesPanel.setAttribute("oncontextmenu", "return false;");
-                //filesPanel.classList.add("no-right-click");
-                // const menuIndexs = [0,1,2,3,4,5,6,7];
-                // for(const index of menuIndexs){
-                //     var xTermMenu = xMenuItems[index];
-                //     var new_element = xTermMenu.cloneNode(true);
-
-                //     if(xTermMenu !== undefined ){
-                //         xTermMenu
-                //         xTermMenu.parentNode?.replaceChild(new_element,xTermMenu);
-                //     }
-                // }
-
-
-
-                
-            
-            //  document.addEventListener('mousedown', (event) =>{
-            //      setTimeout( () => {
-            //         var collection:HTMLCollectionOf<HTMLElement> = document.getElementsByClassName("p-Menu-item") as HTMLCollectionOf<HTMLElement>;
-            //         for(let i = 0; i<collection.length; i++){
-            //             var element:HTMLElement = collection[i];
-            //             if(element !== undefined ){
-            //                 element.classList.add("extension-readOnly")
-            //             }
-            //             console.log("menu item");
-            //             console.log(element.innerHTML);
-            //             console.log(element.style);
-            //         }
-            //      });
-            //  });
+            var xMenuItems = document.getElementById("theia-top-panel") as HTMLElement;
+            xMenuItems.classList.add("extension-readOnly");
             var styleElement = document.createElement('style');
 
-            // // // Append style element to head
-            // document.head.appendChild(element);
 
-            // // Reference to the stylesheet
-            
             var styles = '.p-Widget.p-Menu { ';
             styles += 'pointer-events: none; ';
             styles += 'cursor: default; ';
@@ -137,6 +101,11 @@ export class TheiaSendBdFileUpdates extends AbstractViewContribution<GettingStar
             styles += 'pointer-events: all; ';
             styles += 'cursor: pointer; ';
             styles += ' }\n';
+            styles += '.p-Menu-item[data-command="code-annotation.addNote"] { ';
+            styles += 'opacity: 1;';
+            styles += 'pointer-events: all; ';
+            styles += 'cursor: pointer; ';
+            styles += ' }\n';
             // // Add the first CSS rule to the stylesheet
             styleElement.innerHTML = styles;
             document.body.appendChild(styleElement);
@@ -147,16 +116,6 @@ export class TheiaSendBdFileUpdates extends AbstractViewContribution<GettingStar
 
 
         }
-    }
-    checkReadOnlyElement(element: Element) {
-        let notReadOnly = ["core.cut","core.paste","core.copy"]
-        
-        if(element.attributes.getNamedItem("data-command")?.value != undefined ){
-            if(notReadOnly.includes(element.attributes.getNamedItem("data-command")?.value as string)){
-                return false;
-            }
-        }
-        return true;
     }
 
      private compareFoldernames(path1: string, path2: string){
