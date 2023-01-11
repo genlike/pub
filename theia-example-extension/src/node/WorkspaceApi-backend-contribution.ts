@@ -23,8 +23,8 @@ var hostfs = "/tmp/theia/workspaces/";
 var hostroot = "/home/theia/pub/";
 const staticFolderLength = 76;
 var COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
-//var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
-var itlingoCloudURL = "http://172.26.128.1:8000/";
+var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
+//var itlingoCloudURL = "http://172.26.128.1:8000/";
 var currentEditors: {[ip:string]: Editor} = {};
 
 
@@ -57,10 +57,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         const pgPool = new Pool({
             connectionString,
-            //   ssl: {
-            //       rejectUnauthorized: false
-            //  }
-            ssl: false
+              ssl: {
+                  rejectUnauthorized: false
+             }
+            //ssl: false
         });
         
         function pullFilesFromDb(destinationFolder: string, params: string[]) {
@@ -354,7 +354,6 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
 function createWorkspace(ip:string, params:string[]){
     var randomFoldername = hostfs + 'tmp/WS-' + uuid.v4() + '/Workspace-'+ params[0];
-    //let randomFoldername = 'tmp/Workspace';
 
      fs.mkdir(randomFoldername, {recursive: true},(err:any) => {
          if (err) throw err;
@@ -401,61 +400,6 @@ function createWorkspace(ip:string, params:string[]){
         return watcher;
     }
 
-    
-//     setInterval(() => {
-//         for (const [key, value] of Object.entries(currentEditors)) {
-//             console.log(key + value + 'Time Diff' + (Date.now() - value.time));
-//             //If last update was 5 min ago
-//             //let val:[any, any, any] = value
-//             if(Date.now() - value.time>5*1000*60){
-//                 console.log("unwatch this" + value.foldername.substr(66));
-//                 //value.watcher.unwatch(value.foldername.substr(66));
-//                 value.watcher.then((val) => {val.stop().then(() => {
-//                     delete currentEditors[key];
-//                     fs.readdir(value.foldername.substr(66), (error:any, files:string[])=> {
-//                         if(error){
-//                             console.log(error);
-//                         } else {
-//                             files.forEach(file => {
-//                                 console.log(file);
-//                             });
-//                         }
-//                     });
-//                     fs.rmdir(value.foldername.substr(66)+'/..',{recursive: true}, (error:any) => {console.log(error)});
-//                 });
-//             });
-//         }
-//       }
-// }, 60000);
-
-     
-
-
     }
 }
-
-
-
-
-
-
-
-
-
-
-// function getRemoteParams(token: string ):string[] {
-//     console.log("createTempWorkspace");
-//     console.log(token);
-//     axios.get<String>('http://localhost:8000/token_api/get-user/',{headers:{
-//         'Authorization': token
-//     }}).then( response => {
-//         console.log("response");
-//         console.log(response);
-//     }).catch(reason => {
-//         console.log("catch");
-//         console.log(reason);
-//     });            
-
-//     return  ['workspace'];
-// }
 
