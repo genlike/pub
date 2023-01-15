@@ -1,10 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "prepare": "lerna run prepare",
     "rebuild:browser": "theia rebuild:browser",
-    "start:browser": "yarn rebuild:browser && yarn --cwd browser-app start",
-    "watch": "lerna run --parallel watch"
+    "start:browser": "yarn rebuild:browser && yarn --cwd browser-app start"
   },
   "devDependencies": {
     "lerna": "2.4.0"
