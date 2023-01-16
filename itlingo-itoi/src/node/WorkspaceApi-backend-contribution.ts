@@ -60,7 +60,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             //   ssl: {
             //       rejectUnauthorized: false
             //  }
-            ssl: false
+            ssl: true
         });
         
         function pullFilesFromDb(destinationFolder: string, params: string[]) {
