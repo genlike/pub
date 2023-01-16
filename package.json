@@ -4,9 +4,6 @@
     "rebuild:browser": "theia rebuild:browser",
     "start:browser": "yarn rebuild:browser && yarn --cwd browser-app start"
   },
-  "devDependencies": {
-    "lerna": "2.4.0"
-  },
   "workspaces": [
     "theia-example-extension", "browser-app"
   ]
