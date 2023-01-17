@@ -7,7 +7,7 @@
   "scripts": {
     "postinstall": "theia check:theia-version",
     "rebuild:browser": "theia rebuild:browser",
-    "start:browser": "yarn rebuild:browser && yarn --cwd browser-app start",
+    "start:browser": "yarn rebuild:browser && yarn --cwd browser-app start"
   },
   "devDependencies": {
     "lerna": "2.4.0"
