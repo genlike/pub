@@ -157,7 +157,12 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             const removeNameLength = staticFolderLength + params[0].length + 1;
             const onlyFile = fullfilepath.substring(removeNameLength);
             console.log("woot: " + onlyFile + " " + fullfilepath);
-            const deleteQuery = "DELETE FROM t_files WHERE filename = $1 AND workspace = $2;"
+            let deleteQuery;
+            if (fs.lstatSync(fullfilepath).isDirectory()){
+                deleteQuery = "DELETE FROM t_files WHERE filename LIKE '$1/%' AND workspace = $2;"
+            } else {
+                deleteQuery = "DELETE FROM t_files WHERE filename = $1 AND workspace = $2;"
+            }
             pgPool.query(deleteQuery,[onlyFile, params[0]]);
         }
 
