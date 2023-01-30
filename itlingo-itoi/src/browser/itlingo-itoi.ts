@@ -17,7 +17,7 @@ import axios from 'axios';
 
 
 var path = '/home/theia/Workspaces';
-var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
+//var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
 
 export const TheiaExampleExtensionCommand: Command = {
     id: 'TheiaExampleExtension.command',
