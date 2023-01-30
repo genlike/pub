@@ -5,6 +5,7 @@ import axios from 'axios';
 //const pg = require('pg');
 import * as fs from 'fs';
 import * as nsfw from 'nsfw'
+import path = require("path");
 import * as uuid from 'uuid';
 const { Pool } = require('pg');
 const getDirName = require('path').dirname
@@ -65,7 +66,10 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         });
 
         function fetchParamsFromEvent(event: nsfw.FileChangeEvent){
-            let params = workspaces.get("") as string[];
+            let splitPaths = event.directory.split(path.sep);
+            let params = workspaces.get(splitPaths[4]) as string[];
+            console.log("fetch params:")
+            console.log(params)
             return params;
         }
         
