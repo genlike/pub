@@ -67,7 +67,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         function fetchParamsFromEvent(event: nsfw.FileChangeEvent){
             let splitPaths = event.directory.split(path.sep);
-            let params = workspaces.get(splitPaths[4]) as string[];
+            let params = workspaces.get(splitPaths[5]) as string[];
             console.log("fetch params:")
             console.log(params)
             console.log(splitPaths)
