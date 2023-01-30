@@ -19,21 +19,20 @@ let requestIp = require('request-ip');
 // import { WorkspaceNode } from '@theia/navigator/lib/browser/navigator-tree';
 // import URI from '@theia/core/lib/common/uri';
 
-var hostfs = "/tmp/theia/workspaces/";
-var hostroot = "/home/theia/pub/";
+const hostfs = "/tmp/theia/workspaces/";
+const hostroot = "/home/theia/pub/";
 const staticFolderLength = 76;
-var COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
-var itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
+const COM_KEY = "v8y/B?E(H+MbQeThWmZq4t7w!z$C&F)J";
+const itlingoCloudURL = "https://itlingocloud.herokuapp.com/";
 //var itlingoCloudURL = "http://172.26.128.1:8000/";
-var currentEditors: {[ip:string]: Editor} = {};
-
+const currentEditors: {[ip:string]: Editor} = {};
+const workspaces: Map<string, string[]> = new Map<string, string[]>();
 
 type Editor = {
     foldername:string;
     write: boolean;
     time:number;
     workspaceid: number;
-    watcher: Promise<nsfw.NSFW>;
 };
 
 @injectable()
@@ -52,6 +51,8 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         //     host:'ec2-52-31-217-108.eu-west-1.compute.amazonawas.com',
             
         // });
+
+
         const connectionString = process.env.DATABASE_URL;
         console.log("CONSTRING - " + connectionString)
 
@@ -62,6 +63,11 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             //  }
             ssl: false
         });
+
+        function fetchParamsFromEvent(event: nsfw.FileChangeEvent){
+            let params = workspaces.get("") as string[];
+            return params;
+        }
         
         function pullFilesFromDb(destinationFolder: string, params: string[]) {
             console.log("PullFiles to:");
@@ -84,10 +90,12 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         }
 
 
-        async function addFileToDB(params:string[], event:nsfw.CreatedFileEvent){
+        async function addFileToDB( event:nsfw.CreatedFileEvent){
+            
             console.log("Add file");
             console.log(event.directory);
             console.log(event.file);
+            let params = fetchParamsFromEvent(event);
             const fullfilepath = event.directory + '/' + event.file;
             const removeNameLength = staticFolderLength + params[0].length + 1;
             const onlyFile = fullfilepath.substring(removeNameLength);
@@ -103,6 +111,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                 if(res.rowCount > 0){
                     console.log("File Already Exists");
                 } else {
+                    
                     var rawData = fs.readFileSync(fullfilepath);
                     console.log(params);
                     client.query("INSERT INTO t_files (filename, workspace, file) VALUES ($1, $2, $3)",
@@ -120,11 +129,11 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         }
 
 
-       async function changeFileToDB(params: string[], event: nsfw.ModifiedFileEvent) {
+       async function changeFileToDB( event: nsfw.ModifiedFileEvent) {
             console.log("Change File");
             console.log(event.directory);
             console.log(event.file);
-
+            let params = fetchParamsFromEvent(event);
 
             const client = await pgPool.connect();
             try {
@@ -149,10 +158,11 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             }
         }
 
-        function deleteFileToDB(params: string[], event: nsfw.DeletedFileEvent) {
+        function deleteFileToDB( event: nsfw.DeletedFileEvent) {
             console.log("Delete File");
             console.log(event.directory);
             console.log(event.file);
+            let params = fetchParamsFromEvent(event);
             const fullfilepath = event.directory + '/' + event.file;
             const removeNameLength = staticFolderLength + params[0].length + 1;
             const onlyFile = fullfilepath.substring(removeNameLength);
@@ -162,14 +172,14 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             pgPool.query(deleteQuery,[onlyFile, params[0]]);
         }
 
-        function renameFileToDB(params: string[], event: nsfw.RenamedFileEvent) {
+        function renameFileToDB( event: nsfw.RenamedFileEvent) {
             console.log("Rename File");
             console.log(event.directory);
             console.log(event.oldFile);
 
             console.log(event.newDirectory);
             console.log(event.newFile);
-
+            let params = fetchParamsFromEvent(event);
             const fullfilepath = event.directory + '/' + event.oldFile;
             const newfullfilepath = event.newDirectory + '/' + event.newFile;
             const removeNameLength = staticFolderLength + params[0].length + 1;
@@ -211,6 +221,8 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         //      res.end();
         // });
 
+
+        createWatcher(hostfs + 'tmp/')
         app.get('/getWorkspace', (req, res) => {
             let ip = requestIp.getClientIp(req);
             console.log(currentEditors);
@@ -354,7 +366,8 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
         }
 
 function createWorkspace(ip:string, params:string[]){
-    var randomFoldername = hostfs + 'tmp/WS-' + uuid.v4() + '/Workspace-'+ params[0];
+    let wuuid = uuid.v4();
+    var randomFoldername = hostfs + 'tmp/' + wuuid + '/Workspace-'+ params[0];
 
      fs.mkdir(randomFoldername, {recursive: true},(err:any) => {
          if (err) throw err;
@@ -363,31 +376,31 @@ function createWorkspace(ip:string, params:string[]){
             write: params[3]=="true",
             time: Date.now(),
             workspaceid: Number.parseInt(params[4]),
-            watcher: createWatcher(randomFoldername,params)
          };
      });
+     workspaces.set(wuuid, params);
     pullFilesFromDb(randomFoldername,params);
 }
 
 
-    async function  createWatcher(path:string, params:string[]){
+    async function  createWatcher(path:string){
         let watcher: nsfw.NSFW | undefined = await nsfw(fs.realpathSync(path), (events: nsfw.FileChangeEvent[]) => {
             for (const event of events) {
                 if (event.action === nsfw.actions.CREATED) {
                     console.log('File', path, 'has been added');
-                    addFileToDB(params, event);
+                    addFileToDB( event);
                 }
                 if (event.action === nsfw.actions.DELETED) {
                     console.log('File', path, 'has been removed');
-                    deleteFileToDB(params, event);
+                    deleteFileToDB( event);
                 }
                 if (event.action === nsfw.actions.MODIFIED) {
                     console.log('File', path, 'has been changed');
-                    changeFileToDB(params, event);
+                    changeFileToDB( event);
                 }
                 if (event.action === nsfw.actions.RENAMED) {
                     console.log('File', path, 'has been changed');
-                    renameFileToDB(params, event);
+                    renameFileToDB( event);
                 }
             }
         }, {

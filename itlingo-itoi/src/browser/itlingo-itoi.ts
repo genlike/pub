@@ -149,7 +149,7 @@ export class TheiaSendBdFileUpdates extends AbstractViewContribution<GettingStar
                     this.setReadOnly();
                  }
              ).catch((error) => {
-                window.location.href = itlingoCloudURL;
+                //window.location.href = itlingoCloudURL;
              });
 
         //  setInterval(() =>
