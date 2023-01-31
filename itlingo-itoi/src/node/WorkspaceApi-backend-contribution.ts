@@ -56,21 +56,21 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
 
         const connectionString = process.env.DATABASE_URL;
         console.log("CONSTRING - " + connectionString)
-
-        const pgPool = new Pool({
-            // connectionString,
-            //   ssl: {
-            //       rejectUnauthorized: false
-            //  }
+        let pgPoolOptions:Object = {connectionString,
             ssl: false
-        });
+        };
+        if (process.env.ITOI_PROD === "PROD"){
+            pgPoolOptions = {connectionString,
+                ssl: {
+                    rejectUnauthorized: false
+                }
+            };
+        }
+        const pgPool = new Pool(pgPoolOptions);
 
         function fetchParamsFromEvent(event: nsfw.FileChangeEvent){
             let splitPaths = event.directory.split(path.sep);
             let params = workspaces.get(splitPaths[5]) as string[];
-            console.log("fetch params:")
-            console.log(params)
-            console.log(splitPaths)
             return params;
         }
         
