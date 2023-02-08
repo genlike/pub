@@ -60,6 +60,7 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
             ssl: false
         };
         if (process.env.ITOI_PROD === "PROD"){
+            console.log("PROD");
             pgPoolOptions = {connectionString,
                 ssl: {
                     rejectUnauthorized: false
