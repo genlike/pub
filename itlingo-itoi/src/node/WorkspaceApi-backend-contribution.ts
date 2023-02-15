@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import * as nsfw from 'nsfw'
 import path = require("path");
 import * as uuid from 'uuid';
+const { execFile } = require('node:child_process');
 const { Pool } = require('pg');
 const getDirName = require('path').dirname
 const crypto = require('crypto')
@@ -66,8 +67,14 @@ export class SwitchWSBackendContribution implements BackendApplicationContributi
                     rejectUnauthorized: false
                 }
             };
+            //Lauch LS servers
+            console.log("PROD-launch ls");
+            execFile("/home/theia/ls/rsl/bin/start-ls-itlingo --port 6008");
+            execFile("/home/theia/ls/asl/bin/start-asl-ls-itlingo --port 6009");
         }
         const pgPool = new Pool(pgPoolOptions);
+
+
 
         function fetchParamsFromEvent(event: nsfw.FileChangeEvent){
             let splitPaths = event.directory.split(path.sep);
