@@ -16,10 +16,10 @@ import {
 
 @injectable()
 export class TheiaExampleMenuContribution implements MenuContribution, TabBarToolbarContribution {
-
+    @inject(CommandRegistry) protected readonly  commands: CommandRegistry;
 
     constructor(
-        @inject(CommandRegistry) protected readonly  commands: CommandRegistry
+        
     ){
     }
 
@@ -60,11 +60,13 @@ export class TheiaExampleCommandContribution implements  CommandContribution {
 
     @inject(QuickInputService)
     protected readonly quickInputService: QuickInputService;
-    
+    @inject(MessageService)
+    protected readonly  messageService: MessageService;
+    @inject(CommandRegistry)
+    protected readonly  commands: CommandRegistry
 
     constructor(
-        @inject(MessageService) protected readonly  messageService: MessageService,
-        @inject(CommandRegistry) protected readonly  commands: CommandRegistry
+        
     ){
     }
 
